@@ -1,0 +1,55 @@
+TripCollection.aggregate([
+    {
+        $lookup: {
+            from: "destinations",
+
+            localField: "destination",
+
+            foreignField: "_id",
+
+            as: "destinationDetails"
+        }
+    },
+
+    {
+        $unwind: "destinationDetails"
+    },
+
+    {
+        $project: {
+            _id = 0,
+
+            trip: 1,
+
+            destination: {
+                $project {
+                    _id: 0,
+                    name: 1,
+                    city: 1
+                }
+            }
+        }
+    }
+])
+
+
+
+////
+TripDestination.aggregate([
+
+   {
+      $lookup: {
+         from: "destinations",
+
+         localField: "destination",
+
+         foreignField: "_id",
+
+         as: "destinationDetails"
+      }
+   },
+
+   {
+      $unwind: "$destinationDetails"
+   }
+])

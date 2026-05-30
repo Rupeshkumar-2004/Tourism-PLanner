@@ -101,29 +101,29 @@ const buildDestinationFilters = (query) => {
 export const createDestination = asyncHandler(async (req, res) => {
     const { name, city, state, country, description, estimatedBudget, images, bestTimeToVisit, category, tags } = req.body;
 
-    if([name, city, state].some(field => typeof field !== "string" || field.trim() === "")){
+    if ([name, city, state].some(field => typeof field !== "string" || field.trim() === "")) {
         throw new ApiError(400, "Name, city and state are required");
     }
 
     let budgetNumber = estimatedBudget;
 
-    if(estimatedBudget !== undefined){
+    if (estimatedBudget !== undefined) {
         budgetNumber = Number(estimatedBudget);
 
-        if(Number.isNaN(budgetNumber) || budgetNumber < 0){
+        if (Number.isNaN(budgetNumber) || budgetNumber < 0) {
             throw new ApiError(400, "Estimated budget cannot be negative");
         }
     }
 
-    if(images !== undefined && !Array.isArray(images)){
+    if (images !== undefined && !Array.isArray(images)) {
         throw new ApiError(400, "Images must be an array");
     }
 
-    if(tags !== undefined && !Array.isArray(tags)){
+    if (tags !== undefined && !Array.isArray(tags)) {
         throw new ApiError(400, "Tags must be an array");
     }
 
-    if(category !== undefined && typeof category !== "string"){
+    if (category !== undefined && typeof category !== "string") {
         throw new ApiError(400, "Category must be a string");
     }
 
@@ -141,7 +141,7 @@ export const createDestination = asyncHandler(async (req, res) => {
             tags,
         });
 
-        if(!destination){
+        if (!destination) {
             throw new ApiError(404, "Error during creation of Destination");
         }
 

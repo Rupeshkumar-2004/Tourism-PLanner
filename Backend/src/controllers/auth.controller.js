@@ -37,19 +37,23 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 export const registerUser = asyncHandler(async (req, res) => {
 
-    const { fullName, email, password, phone } = req.body;
+    const { fullName, email, password, role, phone } = req.body;
 
     // Validate required fields
-    if(
+    if (
         [fullName, email, password].some(field =>
             typeof field !== 'string' || field.trim() === ''
         )
-    ){
+    ) {
         throw new ApiError(400, 'All fields are required');
     }
 
     if (password.length < 6) {
         throw new ApiError(400, 'Password must be at least 6 characters');
+    }
+
+    if (role !== undefined && !['user', 'guide', 'admin'].includes(role.toLowerCase())) {
+        throw new ApiError(400, 'Invalid role. Allowed values: user, guide');
     }
 
     if (phone !== undefined && !/^[0-9]{10}$/.test(phone)) {
@@ -58,7 +62,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     // Check if user already exists
     const isUserExists = await User.findOne({ email });
-    if(isUserExists){
+    if (isUserExists) {
         throw new ApiError(409, 'User with this email already exists');
     }
 
@@ -73,7 +77,8 @@ export const registerUser = asyncHandler(async (req, res) => {
             fullName,
             email,
             password: hashedPassword,
-            phone
+            role,
+            phone,
         });
     } catch (error) {
         if (error.code === 11000) {
@@ -85,7 +90,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     // Never send password or refreshToken to client
     const createdUser = await User.findById(user._id)
-                                  .select('-password -refreshToken');
+        .select('-password -refreshToken');
 
     if (!createdUser) {
         throw new ApiError(500, 'User creation failed');
@@ -97,7 +102,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     // Cookie options (VERY IMPORTANT)
     const options = {
-        httpOnly: true, 
+        httpOnly: true,
         // JS on frontend CANNOT access this → protects from XSS
 
         secure: process.env.NODE_ENV === 'production',
@@ -161,7 +166,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
     // Remove sensitive fields
     const loggedInUser = await User.findById(user._id)
-                                   .select('-password -refreshToken');
+        .select('-password -refreshToken');
 
     // Same cookie config
     const options = {

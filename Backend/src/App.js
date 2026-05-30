@@ -23,8 +23,8 @@ app.use(cors({
         if (!origin) return callback(null, true);
 
         // Allow localhost during development
-        if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')){
-          return callback(null, true);
+        if (origin.startsWith('http://localhost') || origin.startsWith('https://localhost')) {
+            return callback(null, true);
         }
 
         // Allow specific production origin from environment variable
@@ -75,6 +75,7 @@ import authRouter from './routes/auth.route.js';
 import destinationRouter from './routes/destination.route.js';
 import tripRouter from './routes/trip.route.js';
 import tripDestinationRouter from './routes/tripdestination.route.js';
+import dashboardRouter from './routes/dashboard.route.js';
 
 //for User
 app.use("/api/v1/auth", authRouter);
@@ -83,6 +84,9 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/trips", tripRouter);
 app.use("/api/v1/destinations", destinationRouter);
 app.use("/api/v1", tripDestinationRouter);
+
+//for dashboard
+app.use("/api/v1/dashboard", dashboardRouter);
 
 /*
 ==================== HEALTH CHECK ROUTE ====================

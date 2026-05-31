@@ -1,7 +1,7 @@
-import TripContent from "../Components/TripContent.jsx";
-import TripSkeleton from "../Components/TripSkeleton.jsx";
-import TripError from "../Components/TripError.jsx";
-import EmptyTrip from "../Components/EmptyTrip.jsx";
+import TripContent from "../Components/TripsList/TripContent.jsx";
+import TripSkeleton from "../Components/TripsList/TripSkeleton.jsx";
+import TripError from "../Components/TripsList/TripError.jsx";
+import EmptyTrip from "../Components/TripsList/EmptyTrip.jsx";
 
 import { useTrips } from "../hooks/useTrips.js";
 

@@ -28,8 +28,8 @@ const EmptyDashboard = () => {
             
             {/* Upcoming Trips */}
             <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center mb-4">
-                <Plane size={20} className="text-sky-700" />
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                <Plane size={20} className="text-amber-700" />
               </div>
 
               <p className="text-4xl font-bold">0</p>
@@ -41,8 +41,8 @@ const EmptyDashboard = () => {
 
             {/* Destinations Visited */}
             <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-cyan-100 flex items-center justify-center mb-4">
-                <Globe size={20} className="text-cyan-700" />
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mb-4">
+                <Globe size={20} className="text-orange-700" />
               </div>
 
               <p className="text-4xl font-bold">0</p>
@@ -67,8 +67,8 @@ const EmptyDashboard = () => {
 
             {/* Saved Places */}
             <div className="bg-white p-6 rounded-xl shadow-sm border">
-              <div className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center mb-4">
-                <MapPin size={20} className="text-sky-700" />
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+                <MapPin size={20} className="text-amber-700" />
               </div>
 
               <p className="text-4xl font-bold">0</p>
@@ -86,15 +86,15 @@ const EmptyDashboard = () => {
             <div className="relative w-48 h-48 flex items-center justify-center mb-8">
               
               {/* Background Circles */}
-              <div className="absolute inset-0 bg-sky-100 rounded-full blur-2xl"></div>
+              <div className="absolute inset-0 bg-amber-100 rounded-full blur-2xl"></div>
 
               {/* Decorative Icons */}
-              <Plane size={24} className="absolute top-4 right-8 text-sky-400" />
-              <MapPin size={24} className="absolute bottom-4 right-4 text-sky-300" />
+              <Plane size={24} className="absolute top-4 right-8 text-amber-400" />
+              <MapPin size={24} className="absolute bottom-4 right-4 text-amber-300" />
 
               {/* Main Icon */}
               <div className="relative z-10 w-32 h-32 rounded-full bg-white shadow-lg flex items-center justify-center">
-                <Compass size={64} className="text-sky-700" />
+                <Compass size={64} className="text-amber-700" />
               </div>
             </div>
 
@@ -108,7 +108,7 @@ const EmptyDashboard = () => {
             </p>
 
             {/* CTA Button */}
-            <button className="px-8 py-3 rounded-lg bg-sky-700 text-white hover:bg-sky-800 flex items-center gap-2 font-medium transition-colors">
+            <button className="px-8 py-3 rounded-lg bg-amber-700 text-white hover:bg-amber-800 flex items-center gap-2 font-medium transition-colors">
               <Sparkles size={18} />
               Explore Destinations
             </button>

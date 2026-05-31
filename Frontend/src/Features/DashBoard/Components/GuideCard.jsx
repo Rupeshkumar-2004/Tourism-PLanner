@@ -1,7 +1,8 @@
 
 import { UserRound } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-function GuideCard({ title, description, image, imageAlt, badge, BadgeIcon }) {
+function GuideCard({ id, title, description, image, imageAlt, badge, BadgeIcon }) {
   const Icon = BadgeIcon || UserRound;
   const cardTitle = title || 'Travel Guide';
   const cardDescription =
@@ -35,9 +36,12 @@ function GuideCard({ title, description, image, imageAlt, badge, BadgeIcon }) {
           {cardDescription}
         </p>
         <div className="mt-auto pt-4 border-t border-outline-variant/30">
-          <button className="w-full bg-primary text-on-primary hover:bg-primary/90 transition-colors py-2.5 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2">
+          <Link 
+            to={id ? `/destinations/${id}` : '#'}
+            className="w-full bg-primary text-on-primary hover:bg-primary/90 transition-colors py-2.5 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2"
+          >
             View Guide
-          </button>
+          </Link>
         </div>
       </div>
     </div>

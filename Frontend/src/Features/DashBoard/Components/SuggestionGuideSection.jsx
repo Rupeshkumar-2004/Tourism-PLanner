@@ -109,6 +109,7 @@ const SuggestionGuideSection = ({ guides = [] }) => {
         {visibleGuides.map((guide) => (
           <GuideCard
             key={guide.id}
+            id={guide.id}
             title={guide.title}
             description={guide.description}
             image={guide.image}

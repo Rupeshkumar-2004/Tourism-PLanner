@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import getDestinations from "../services/destinationServices";
+import getDestinations from "../services/destinationsServices";
 
 function useDestinations() {
     const [destinations, setDestinations] = useState([]);

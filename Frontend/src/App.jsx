@@ -6,6 +6,7 @@ import TripPage from "./Features/Trips/Pages/TripPage.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import ProtectedRoute from "./Routes/ProtectedRoute.jsx";
 import DestinationsPage from "./Features/Destinations/Page/DestinationsPage.jsx";
+import DestinationPage from "./Features/Destinations/Page/DestinationPage.jsx";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/sign-up" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/destinations" element={<DestinationsPage />} />
+          <Route path="/destinations/:destinationId" element={<DestinationPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 
 const DestinationCard = ({ destination }) => {
   const imageUrl = destination.images?.[0] || destination.image || '';
@@ -32,9 +33,12 @@ const DestinationCard = ({ destination }) => {
         <h2 className="font-headline-md text-headline-md text-on-surface mb-3">{destination.name}</h2>
         <p className="font-body-md text-body-md text-on-surface-variant mb-6 line-clamp-3">{destination.description}</p>
 
-        <button className="w-full bg-primary-container text-on-primary font-label-md text-label-md py-3 rounded-lg hover:bg-primary transition-colors">
+        <Link 
+          to={`/destinations/${destination.id || destination._id}`}
+          className="w-full bg-primary-container text-on-primary font-label-md text-label-md py-3 rounded-lg hover:bg-primary transition-colors flex items-center justify-center"
+        >
           View Guide
-        </button>
+        </Link>
       </div>
     </article>
   );

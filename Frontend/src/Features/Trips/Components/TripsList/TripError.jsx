@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
-import TopNavBar from '../../../components/TopNavBar.jsx';
+import TopNavBar from '../../../../components/TopNavBar.jsx';
 
-const TripError = ({ onRetry = () => {} }) => {
+const TripError = ({ onRetry = () => { } }) => {
   return (
     <div className="bg-surface text-on-surface font-body-md min-h-screen pb-section-gap">
       <TopNavBar />

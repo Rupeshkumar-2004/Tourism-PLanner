@@ -50,10 +50,10 @@ export default function TopNavBar({ user }) {
     <nav className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm md:px-12">
       <div className="flex min-w-0 items-center gap-6">
         <Link className="flex items-center gap-2 shrink-0" to="/dashboard">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-sky-700">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
             <Compass size={20} />
           </span>
-          <span className="text-xl font-bold text-sky-700">SkyVoyage</span>
+          <span className="text-xl font-bold text-amber-700">SkyVoyage</span>
         </Link>
 
         <div className="hidden items-center gap-6 md:flex">
@@ -61,8 +61,8 @@ export default function TopNavBar({ user }) {
             <NavLink
               className={({ isActive }) =>
                 isActive
-                  ? 'border-b-2 border-sky-700 pb-1 font-medium text-sky-700 transition-colors hover:text-sky-800'
-                  : 'border-b-2 border-transparent pb-1 font-medium text-slate-600 transition-colors hover:text-sky-700'
+                  ? 'border-b-2 border-amber-700 pb-1 font-medium text-amber-700 transition-colors hover:text-amber-800'
+                  : 'border-b-2 border-transparent pb-1 font-medium text-slate-600 transition-colors hover:text-amber-700'
               }
               key={link.label}
               to={link.to}
@@ -76,7 +76,7 @@ export default function TopNavBar({ user }) {
       <div className="flex items-center gap-2 md:gap-4">
         <button
           aria-label="Notifications"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 hover:text-sky-700"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 hover:text-amber-700"
           type="button"
         >
           <Bell size={20} />
@@ -84,7 +84,7 @@ export default function TopNavBar({ user }) {
 
         <button
           aria-label="Settings"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 hover:text-sky-700"
+          className="flex h-10 w-10 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 hover:text-amber-700"
           type="button"
         >
           <Settings size={20} />
@@ -95,7 +95,7 @@ export default function TopNavBar({ user }) {
             aria-expanded={isProfileMenuOpen}
             aria-haspopup="menu"
             aria-label="Open profile menu"
-            className="h-9 w-9 overflow-hidden rounded-full border border-slate-200 bg-sky-100 text-sky-700 ring-2 ring-white transition hover:ring-sky-200"
+            className="h-9 w-9 overflow-hidden rounded-full border border-slate-200 bg-amber-100 text-amber-700 ring-2 ring-white transition hover:ring-amber-200"
             onClick={() => setIsProfileMenuOpen((isOpen) => !isOpen)}
             type="button"
           >
@@ -129,7 +129,7 @@ export default function TopNavBar({ user }) {
               </div>
 
               <button
-                className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-sky-700"
+                className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-amber-700"
                 onClick={handleSignOut}
                 role="menuitem"
                 type="button"

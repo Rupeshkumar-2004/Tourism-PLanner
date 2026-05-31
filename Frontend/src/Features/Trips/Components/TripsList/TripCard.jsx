@@ -1,4 +1,5 @@
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Edit2, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const StatusBadge = ({status}) => {
   const statusColors = {
@@ -62,14 +63,33 @@ const Dates = ({ trip }) => {
     )
 }
 
-const TripCard = ({ trip }) => {
+const TripCard = ({ trip, onEdit, onDelete }) => {
+  const navigate = useNavigate();
+
   return (
-    <article className="bg-surface-container-lowest rounded-xl shadow-ambient hover:shadow-ambient-hover transition-all duration-300 flex flex-col overflow-hidden border border-outline-variant/70">
+    <article className="bg-surface-container-lowest rounded-xl shadow-ambient hover:shadow-ambient-hover transition-all duration-300 flex flex-col overflow-hidden border border-outline-variant/70 relative group">
+      <div className="absolute top-4 left-4 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button 
+          onClick={() => onEdit(trip)}
+          className="p-2 bg-surface-container-lowest/90 backdrop-blur-sm rounded-full text-primary hover:bg-primary hover:text-on-primary shadow-sm transition-colors"
+          title="Edit Trip"
+        >
+          <Edit2 size={16} />
+        </button>
+        <button 
+          onClick={() => onDelete(trip.id || trip._id)}
+          className="p-2 bg-surface-container-lowest/90 backdrop-blur-sm rounded-full text-error hover:bg-error hover:text-on-error shadow-sm transition-colors"
+          title="Delete Trip"
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+
       <div className="h-[220px] w-full bg-surface-container relative overflow-hidden">
         <img
           alt={trip.title || "Trip cover"}
           className="w-full h-full object-cover"
-          src={trip.image}
+          src={trip.image || trip.bannerImage || "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80"}
         />
         <StatusBadge status={trip.status} />
       </div>
@@ -100,7 +120,10 @@ const TripCard = ({ trip }) => {
               <span className="font-body-md text-body-md text-on-surface">{trip.milestone}</span>
             </div>
           )} */}
-          <button className="font-label-md text-label-md text-primary hover:text-on-primary-container transition-colors">
+          <button 
+            onClick={() => navigate(`/trips/${trip.id || trip._id}`)}
+            className="font-label-md text-label-md text-primary hover:text-on-primary-container transition-colors"
+          >
             View Details
           </button>
         </div>

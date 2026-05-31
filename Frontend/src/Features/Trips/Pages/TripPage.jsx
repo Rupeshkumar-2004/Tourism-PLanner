@@ -86,10 +86,10 @@ const TripPage = () => {
   const pastTrips = allPastTrips(tripsData);
 
   if (upcomingTrips.length === 0 && pastTrips.length === 0) {
-    return <EmptyTrip />;
+    return <EmptyTrip refetchTrips={refetchTrip} />;
   }
 
-  return <TripContent upcomingTrips={upcomingTrips} pastTrips={pastTrips} />
+  return <TripContent upcomingTrips={upcomingTrips} pastTrips={pastTrips} refetchTrips={refetchTrip} />
 }
 
 export default TripPage

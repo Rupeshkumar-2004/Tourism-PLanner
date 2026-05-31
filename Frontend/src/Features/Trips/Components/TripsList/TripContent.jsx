@@ -4,10 +4,31 @@ import TopNavBar from "../../../../components/TopNavBar.jsx";
 import TripCard from "./TripCard.jsx";
 import EmptyTripCard from "./EmptyTripCard.jsx";
 import { useAuth } from "../../../../hooks/useAuth.js";
+import TripFormModal from "./TripFormModal.jsx";
+import { useTripMutations } from "../../hooks/useTripMutations.js";
 
-
-const TripContent = ({ upcomingTrips = [], pastTrips = [] }) => {
+const TripContent = ({ upcomingTrips = [], pastTrips = [], refetchTrips }) => {
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editTripData, setEditTripData] = useState(null);
+  
+  const { deleteTrip } = useTripMutations(refetchTrips);
+
+  const handleEdit = (trip) => {
+    setEditTripData(trip);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this trip?")) {
+      await deleteTrip(id);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditTripData(null);
+  };
 
   function onTabChange(val) {
     setActiveTab(val);
@@ -29,7 +50,10 @@ const TripContent = ({ upcomingTrips = [], pastTrips = [] }) => {
               Track your upcoming adventures and relive past experiences.
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-primary text-on-primary font-label-md text-label-md rounded-lg px-5 py-3 shadow-ambient hover:shadow-ambient-hover hover:bg-on-primary-container transition-all duration-300">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-primary text-on-primary font-label-md text-label-md rounded-lg px-5 py-3 shadow-ambient hover:shadow-ambient-hover hover:bg-on-primary-container transition-all duration-300"
+          >
             <Plus size={18} />
             Plan New Journey
           </button>
@@ -63,13 +87,13 @@ const TripContent = ({ upcomingTrips = [], pastTrips = [] }) => {
           {activeTab === 'upcoming' ? (
             <>
               {upcomingTrips.map((trip) => (
-                <TripCard key={trip.id} trip={trip} />
+                <TripCard key={trip.id} trip={trip} onEdit={handleEdit} onDelete={handleDelete} />
               ))}
               {upcomingTrips.length < 3 && <EmptyTripCard />}
             </>
           ) : displayTrips && displayTrips.length > 0 ? (
             displayTrips.map((trip) => (
-              <TripCard key={trip.id} trip={trip} />
+              <TripCard key={trip.id} trip={trip} onEdit={handleEdit} onDelete={handleDelete} />
             ))
           ) : (
             <div className="col-span-full text-center py-12">
@@ -78,6 +102,13 @@ const TripContent = ({ upcomingTrips = [], pastTrips = [] }) => {
           )}
         </div>
       </main>
+
+      <TripFormModal 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+        onSuccess={refetchTrips}
+        initialData={editTripData}
+      />
     </div>
   )
 }

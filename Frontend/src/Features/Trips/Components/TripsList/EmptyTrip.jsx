@@ -3,9 +3,11 @@ import { Plus } from "lucide-react";
 import EmptyTripCard from "./EmptyTripCard.jsx";
 import TopNavBar from "../../../../components/TopNavBar.jsx";
 import { useAuth } from "../../../../hooks/useAuth.js";
+import TripFormModal from "./TripFormModal.jsx";
 
-const EmptyTrip = () => {
+const EmptyTrip = ({ refetchTrips }) => {
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function onTabChange(val) {
     setActiveTab(val);
@@ -25,7 +27,10 @@ const EmptyTrip = () => {
               Track your upcoming adventures and relive past experiences.
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-primary text-on-primary font-label-md text-label-md rounded-lg px-5 py-3 shadow-ambient hover:shadow-ambient-hover hover:bg-on-primary-container transition-all duration-300">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 bg-primary text-on-primary font-label-md text-label-md rounded-lg px-5 py-3 shadow-ambient hover:shadow-ambient-hover hover:bg-on-primary-container transition-all duration-300"
+          >
             <Plus size={18} />
             Plan New Journey
           </button>
@@ -59,6 +64,12 @@ const EmptyTrip = () => {
           <EmptyTripCard />
         </div>
       </main>
+
+      <TripFormModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={refetchTrips}
+      />
     </div>
   );
 };

@@ -208,6 +208,8 @@ async function seed() {
             {
                 title: "Rajasthan Heritage Tour",
                 description: "Exploring the royal palaces and forts of Rajasthan",
+                category: "heritage",
+                bannerImage: "https://images.unsplash.com/photo-1510133744874-0968eb3aa0db?q=80&w=2070&auto=format&fit=crop",
                 startDate: new Date(now.getFullYear(), now.getMonth() - 3, 10),
                 endDate: new Date(now.getFullYear(), now.getMonth() - 2, 5),
                 totalBudget: 25000,
@@ -218,6 +220,8 @@ async function seed() {
             {
                 title: "Kerala Backwaters Escape",
                 description: "Houseboat stay and tea garden visit in God's Own Country",
+                category: "nature",
+                bannerImage: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop",
                 startDate: new Date(now.getFullYear(), now.getMonth() - 2, 15),
                 endDate: new Date(now.getFullYear(), now.getMonth() - 1, 1),
                 totalBudget: 18000,
@@ -228,6 +232,8 @@ async function seed() {
             {
                 title: "Ladakh Road Trip",
                 description: "Bike trip through the highest motorable roads in the world",
+                category: "adventure",
+                bannerImage: "https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2072&auto=format&fit=crop",
                 startDate: new Date(now.getFullYear(), now.getMonth() + 1, 1),
                 endDate: new Date(now.getFullYear(), now.getMonth() + 1, 15),
                 totalBudget: 35000,
@@ -238,6 +244,8 @@ async function seed() {
             {
                 title: "Goa Beach Vacation",
                 description: "Sun, sand, and seafood on the western coast",
+                category: "relaxation",
+                bannerImage: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop",
                 startDate: new Date(now.getFullYear(), now.getMonth() + 2, 10),
                 endDate: new Date(now.getFullYear(), now.getMonth() + 2, 17),
                 totalBudget: 20000,
@@ -259,6 +267,29 @@ async function seed() {
                 estimatedBudget: 12000,
                 notes: "Visit City Palace, Hawa Mahal, Amber Fort",
                 order: 1,
+                essentialGear: ["Comfortable Shoes", "Sunglasses", "Water Bottle"],
+                itinerary: [
+                    {
+                        dayNumber: 1,
+                        theme: "Arrival & City Palace",
+                        date: trips[0].startDate,
+                        activities: [
+                            {
+                                time: "10:00 AM",
+                                title: "Hotel Check-in & Refresh",
+                                description: "Arrive at the heritage hotel and settle in.",
+                                activityType: "Leisure"
+                            },
+                            {
+                                time: "01:00 PM",
+                                title: "City Palace Exploration",
+                                description: "A guided tour of the royal residence.",
+                                activityType: "Group Activity",
+                                imageUrl: "https://images.unsplash.com/photo-1599661046289-e31897846e41?w=800"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 trip: trips[0]._id,
@@ -268,6 +299,29 @@ async function seed() {
                 estimatedBudget: 13000,
                 notes: "Lake Pichola boat ride, City Palace",
                 order: 2,
+                essentialGear: ["Camera", "Light Jacket", "Walking Shoes"],
+                itinerary: [
+                    {
+                        dayNumber: 1,
+                        theme: "City of Lakes",
+                        date: new Date(now.getFullYear(), now.getMonth() - 3, 21),
+                        activities: [
+                            {
+                                time: "04:00 PM",
+                                title: "Boat Ride on Lake Pichola",
+                                description: "Enjoy a serene boat ride viewing the floating palaces during sunset.",
+                                activityType: "Leisure",
+                                imageUrl: "https://images.unsplash.com/photo-1585135497273-1a86d9471b8e?w=800"
+                            },
+                            {
+                                time: "07:30 PM",
+                                title: "Dinner at Ambrai Ghat",
+                                description: "Traditional Rajasthani dinner overlooking the lake.",
+                                activityType: "Dining"
+                            }
+                        ]
+                    }
+                ]
             },
             // Kerala Backwaters Escape
             {
@@ -278,6 +332,29 @@ async function seed() {
                 estimatedBudget: 10000,
                 notes: "Overnight houseboat stay",
                 order: 1,
+                essentialGear: ["Mosquito Repellent", "Light Cotton Clothes", "Camera"],
+                itinerary: [
+                    {
+                        dayNumber: 1,
+                        theme: "Backwater Cruising",
+                        date: trips[1].startDate,
+                        activities: [
+                            {
+                                time: "12:00 PM",
+                                title: "Board Houseboat",
+                                description: "Check into the traditional houseboat and enjoy a welcome drink.",
+                                activityType: "Leisure",
+                                imageUrl: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=800"
+                            },
+                            {
+                                time: "01:30 PM",
+                                title: "Kerala Style Lunch",
+                                description: "Enjoy freshly caught fish and traditional Kerala meals on board.",
+                                activityType: "Dining"
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 trip: trips[1]._id,
@@ -287,6 +364,29 @@ async function seed() {
                 estimatedBudget: 8000,
                 notes: "Tea garden tour, Eravikulam National Park",
                 order: 2,
+                essentialGear: ["Warm Jacket", "Trekking Shoes", "Binoculars"],
+                itinerary: [
+                    {
+                        dayNumber: 1,
+                        theme: "Tea Gardens & Hills",
+                        date: new Date(now.getFullYear(), now.getMonth() - 2, 23),
+                        activities: [
+                            {
+                                time: "09:00 AM",
+                                title: "Visit Tea Museum",
+                                description: "Learn about the history of tea making in Munnar.",
+                                activityType: "Group Activity"
+                            },
+                            {
+                                time: "11:30 AM",
+                                title: "Eravikulam National Park",
+                                description: "Spot the endangered Nilgiri Tahr.",
+                                activityType: "Nature Trail",
+                                imageUrl: "https://images.unsplash.com/photo-1625633716457-b5487e7f9998?w=800"
+                            }
+                        ]
+                    }
+                ]
             },
             // Ladakh Road Trip
             {
@@ -297,6 +397,36 @@ async function seed() {
                 estimatedBudget: 35000,
                 notes: "Khardung La, Pangong Lake, Nubra Valley",
                 order: 1,
+                essentialGear: ["Heavy Woolens", "Oxygen Canister", "Sunscreen", "Sturdy Boots"],
+                itinerary: [
+                    {
+                        dayNumber: 1,
+                        theme: "Acclimatization",
+                        date: trips[2].startDate,
+                        activities: [
+                            {
+                                time: "10:00 AM",
+                                title: "Arrival in Leh",
+                                description: "Complete rest day to acclimatize to the high altitude.",
+                                activityType: "Leisure",
+                                imageUrl: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=800"
+                            }
+                        ]
+                    },
+                    {
+                        dayNumber: 2,
+                        theme: "Local Sightseeing",
+                        date: new Date(now.getFullYear(), now.getMonth() + 1, 2),
+                        activities: [
+                            {
+                                time: "09:00 AM",
+                                title: "Shanti Stupa Visit",
+                                description: "Visit the white-domed stupa for panoramic views of Leh.",
+                                activityType: "Sightseeing"
+                            }
+                        ]
+                    }
+                ]
             },
             // Goa Beach Vacation
             {
@@ -307,6 +437,29 @@ async function seed() {
                 estimatedBudget: 20000,
                 notes: "Baga Beach, Old Goa churches, water sports",
                 order: 1,
+                essentialGear: ["Swimwear", "Sunscreen", "Flip Flops", "Hat"],
+                itinerary: [
+                    {
+                        dayNumber: 1,
+                        theme: "Beach & Chill",
+                        date: trips[3].startDate,
+                        activities: [
+                            {
+                                time: "11:00 AM",
+                                title: "Baga Beach Relaxation",
+                                description: "Enjoy the sun, sand, and shacks.",
+                                activityType: "Leisure",
+                                imageUrl: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=800"
+                            },
+                            {
+                                time: "04:00 PM",
+                                title: "Water Sports",
+                                description: "Parasailing and jet skiing.",
+                                activityType: "Adventure"
+                            }
+                        ]
+                    }
+                ]
             },
         ]);
 

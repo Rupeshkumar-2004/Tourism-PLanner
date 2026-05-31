@@ -42,7 +42,7 @@ const buildTripDestinationFilters = (query, tripId) => {
 export const addDestinationToTrip = asyncHandler(async (req, res) => {
 
    const tripId = req.params.tripId;
-   const { destinationId, arrivalDate, departureDate, estimatedBudget, notes, order } = req.body;
+   const { destinationId, arrivalDate, departureDate, estimatedBudget, notes, order, itinerary, essentialGear } = req.body;
 
    if(!mongoose.isValidObjectId(tripId)){
       throw new ApiError(400, "Invalid trip id");
@@ -107,7 +107,9 @@ export const addDestinationToTrip = asyncHandler(async (req, res) => {
          departureDate,
          estimatedBudget: budgetNumber,
          notes,
-         order: destinationOrder
+         order: destinationOrder,
+         itinerary: itinerary || [],
+         essentialGear: essentialGear || []
       });
 
       return res.status(201).json(
@@ -197,7 +199,9 @@ export const updateTripDestinationById = asyncHandler(async (req, res) => {
       departureDate,
       estimatedBudget,
       notes,
-      order
+      order,
+      itinerary,
+      essentialGear
    } = req.body;
 
    if (!mongoose.isValidObjectId(id)) {
@@ -272,6 +276,8 @@ export const updateTripDestinationById = asyncHandler(async (req, res) => {
    if (departureDate !== undefined) tripDestination.departureDate = departureDate;
    if (estimatedBudget !== undefined) tripDestination.estimatedBudget = budgetNumber;
    if (notes !== undefined) tripDestination.notes = notes;
+   if (itinerary !== undefined) tripDestination.itinerary = itinerary;
+   if (essentialGear !== undefined) tripDestination.essentialGear = essentialGear;
 
    try {
       const updatedTripDestination = await tripDestination.save();

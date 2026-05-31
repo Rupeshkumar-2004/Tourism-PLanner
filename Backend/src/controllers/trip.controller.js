@@ -72,7 +72,7 @@ const buildTripFilters = (query, userId) => {
 
 export const createTrip = asyncHandler(async (req, res) => {
 
-   const { title, description, startDate, endDate, totalBudget } = req.body;
+   const { title, description, startDate, endDate, totalBudget, category } = req.body;
 
    if (
       typeof title !== "string" ||
@@ -105,9 +105,24 @@ export const createTrip = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Total budget cannot be negative");
    }
 
+   // Assign pre-stored banner based on category
+   const bannerImages = {
+      adventure: "https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2072&auto=format&fit=crop",
+      heritage: "https://images.unsplash.com/photo-1510133744874-0968eb3aa0db?q=80&w=2070&auto=format&fit=crop",
+      nature: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop",
+      city: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2144&auto=format&fit=crop",
+      relaxation: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop",
+      other: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"
+   };
+
+   const tripCategory = category || 'other';
+   const bannerImage = bannerImages[tripCategory] || bannerImages['other'];
+
    const trip = await Trip.create({
       title,
       description,
+      category: tripCategory,
+      bannerImage,
       startDate: start,
       endDate: end,
       totalBudget: budgetNumber,
@@ -214,7 +229,7 @@ export const getTripById = asyncHandler(async (req, res) => {
 export const updateTripById = asyncHandler(async (req, res) => {
       
    const tripId = req.params.tripId;
-   const { title, description, startDate, endDate, totalBudget } = req.body;
+   const { title, description, startDate, endDate, totalBudget, category, bannerImage } = req.body;
 
    if (!mongoose.isValidObjectId(tripId)) {
       throw new ApiError(400, "Invalid trip id");
@@ -243,6 +258,26 @@ export const updateTripById = asyncHandler(async (req, res) => {
 
    if (description !== undefined) {
       trip.description = description;
+   }
+
+   if (category !== undefined) {
+      trip.category = category;
+      // Also optionally update the bannerImage if category changes and bannerImage is not explicitly provided
+      if (bannerImage === undefined) {
+         const bannerImages = {
+            adventure: "https://images.unsplash.com/photo-1522199755839-a2bacb67c546?q=80&w=2072&auto=format&fit=crop",
+            heritage: "https://images.unsplash.com/photo-1510133744874-0968eb3aa0db?q=80&w=2070&auto=format&fit=crop",
+            nature: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2070&auto=format&fit=crop",
+            city: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2144&auto=format&fit=crop",
+            relaxation: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop",
+            other: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"
+         };
+         trip.bannerImage = bannerImages[category] || bannerImages['other'];
+      }
+   }
+
+   if (bannerImage !== undefined) {
+      trip.bannerImage = bannerImage;
    }
 
    if (startDate !== undefined) {

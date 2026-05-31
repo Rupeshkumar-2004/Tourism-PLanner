@@ -42,6 +42,28 @@ const tripDestinationSchema = new Schema(
             maxlength: [500, "Notes cannot exceed 500 characters"],
         },
 
+        itinerary: [
+            {
+                dayNumber: { type: Number, required: true },
+                theme: { type: String, trim: true },
+                date: { type: Date },
+                activities: [
+                    {
+                        time: { type: String, trim: true },
+                        title: { type: String, required: true, trim: true },
+                        description: { type: String, trim: true },
+                        activityType: { type: String, trim: true },
+                        imageUrl: { type: String, trim: true },
+                        locationInfo: { type: String, trim: true }
+                    }
+                ]
+            }
+        ],
+
+        essentialGear: [
+            { type: String, trim: true }
+        ],
+
         order: {
             type: Number,
             min: [1, "Order must be at least 1"],

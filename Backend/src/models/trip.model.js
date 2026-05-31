@@ -14,6 +14,17 @@ const tripSchema = new mongoose.Schema(
             trim: true,
         },
 
+        category: {
+            type: String,
+            enum: ['adventure', 'heritage', 'nature', 'city', 'relaxation', 'other'],
+            default: 'other'
+        },
+
+        bannerImage: {
+            type: String,
+            trim: true
+        },
+
         startDate: {
             type: Date,
             required: [true, "Start date is required"],

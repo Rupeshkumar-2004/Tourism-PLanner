@@ -3,7 +3,9 @@ import TopNavBar from '../../../components/TopNavBar.jsx';
 import { useAuth } from '../../../hooks/useAuth.js';
 import useDestination from '../../Destinations/hooks/useDestination.js';
 import PlacesGrid from '../components/PlacesGrid.jsx';
-import { ChevronRight, Map, CloudSun } from 'lucide-react';
+import WeatherWidget from '../components/WeatherWidget.jsx';
+import InteractiveMapWrapper from '../components/InteractiveMapWrapper.jsx';
+import { ChevronRight } from 'lucide-react';
 
 const PlacesPage = () => {
     const { user } = useAuth();
@@ -44,20 +46,11 @@ const PlacesPage = () => {
 
                 {/* Weather and Map Placeholders */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-12">
-                    {/* Weather Placeholder */}
-                    <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-8 flex flex-col items-center justify-center min-h-[200px] shadow-sm text-center">
-                        <CloudSun className="w-12 h-12 text-outline mb-4 opacity-50" />
-                        <h3 className="font-headline-md text-headline-md text-on-surface-variant opacity-70 mb-2">Weather Integration</h3>
-                        <p className="text-label-md text-outline">Coming soon</p>
-                    </div>
+                    {/* Weather Integration */}
+                    <WeatherWidget destinationId={destinationId} />
 
-                    {/* Map Placeholder */}
-                    <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-8 flex flex-col items-center justify-center min-h-[200px] shadow-sm text-center relative overflow-hidden">
-                        <div className="absolute inset-0 bg-surface-variant opacity-30"></div>
-                        <Map className="w-12 h-12 text-outline mb-4 opacity-50 relative z-10" />
-                        <h3 className="font-headline-md text-headline-md text-on-surface-variant opacity-70 mb-2 relative z-10">Interactive Region Map</h3>
-                        <p className="text-label-md text-outline relative z-10">Coming soon</p>
-                    </div>
+                    {/* Map Integration */}
+                    <InteractiveMapWrapper destinationId={destinationId} />
                 </div>
 
                 {/* Places Grid Component (Handles its own loading and fetching) */}

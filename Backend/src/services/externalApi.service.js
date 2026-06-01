@@ -68,6 +68,32 @@ export const getCoordinatesForCity = async (cityName) => {
 };
 
 /**
+ * Gets real-time weather and 3-day forecast using Open-Meteo API.
+ */
+export const getWeatherForCity = async (cityName) => {
+    try {
+        const coords = await getCoordinatesForCity(cityName);
+        if (!coords) {
+            throw new Error("City not found");
+        }
+
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=3`;
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Open-Meteo API failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Weather Fetch Error:", error);
+        throw new ApiError(500, "Failed to fetch weather data.");
+    }
+};
+
+/**
  * Fetches tourist attractions around a specific latitude and longitude using Geoapify Places API.
  */
 export const getTouristPlacesByCoords = async (lat, lon, limit = 10) => {

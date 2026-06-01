@@ -369,3 +369,28 @@ export const deleteDestinationById = asyncHandler(async (req, res) => {
         )
     );
 });
+
+// @desc    Get weather for destination
+// @route   GET /api/v1/destinations/:id/weather
+// @access  Public
+export const getDestinationWeather = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+        throw new ApiError(400, "Invalid destination ID");
+    }
+
+    const destination = await Destination.findById(id);
+
+    if (!destination) {
+        throw new ApiError(404, "Destination not found");
+    }
+
+    const { getWeatherForCity } = await import("../services/externalApi.service.js");
+    
+    const weatherData = await getWeatherForCity(destination.city);
+
+    return res.status(200).json(
+        new ApiResponse(200, weatherData, "Weather data fetched successfully")
+    );
+});

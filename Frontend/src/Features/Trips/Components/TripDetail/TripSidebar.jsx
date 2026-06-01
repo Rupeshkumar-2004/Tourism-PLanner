@@ -1,3 +1,5 @@
+import WeatherWidget from '../../../Places/components/WeatherWidget';
+
 const TripSidebar = ({ trip }) => {
     // Collect all essential gear from all destinations
     const destinations = trip.destinations || [];
@@ -31,16 +33,12 @@ const TripSidebar = ({ trip }) => {
                 </div>
             </div>
 
-            {/* Weather Placeholder */}
-            <div className="bg-surface-container-lowest rounded-2xl shadow-ambient p-6 border border-outline-variant/70">
-                <h3 className="font-title-lg text-title-lg text-on-surface mb-4 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary">partly_cloudy_day</span>
-                    Weather Forecast
-                </h3>
-                <div className="p-4 rounded-xl border border-dashed border-outline-variant text-center bg-surface-container-lowest">
-                     <p className="font-body-sm text-body-sm text-on-surface-variant">Weather API integration pending.</p>
+            {/* Weather Integration */}
+            {destinations.length > 0 && destinations[0]._id && (
+                <div className="w-full">
+                    <WeatherWidget destinationId={destinations[0]._id} />
                 </div>
-            </div>
+            )}
 
             {/* Essential Gear */}
             {gearList.length > 0 && (

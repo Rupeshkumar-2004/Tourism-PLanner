@@ -331,3 +331,58 @@ export const deleteTripDestinationById = asyncHandler(async (req, res) => {
       )
    );
 });
+
+export const addPlaceToItinerary = asyncHandler(async (req, res) => {
+   const { tripId, destinationId, place } = req.body;
+
+   if (!mongoose.isValidObjectId(tripId) || !mongoose.isValidObjectId(destinationId)) {
+      throw new ApiError(400, "Invalid trip or destination ID");
+   }
+
+   if (!place || !place.name) {
+      throw new ApiError(400, "Valid place object is required");
+   }
+
+   // Ensure the trip exists and belongs to the user
+   const trip = await Trip.findOne({ _id: tripId, createdBy: req.user._id });
+   if (!trip) {
+      throw new ApiError(404, "Trip not found");
+   }
+
+   // 1. Find or Create the TripDestination
+   let tripDestination = await TripDestination.findOne({ trip: tripId, destination: destinationId });
+
+   if (!tripDestination) {
+      // Create it if it doesn't exist
+      tripDestination = await TripDestination.create({
+         trip: tripId,
+         destination: destinationId,
+         itinerary: [{
+            dayNumber: 1,
+            activities: []
+         }]
+      });
+   }
+
+   // 2. Find "Day 1" in the itinerary, or create it if missing
+   let dayOne = tripDestination.itinerary.find(day => day.dayNumber === 1);
+   if (!dayOne) {
+      dayOne = { dayNumber: 1, activities: [] };
+      tripDestination.itinerary.push(dayOne);
+   }
+
+   // 3. Append the Place as an activity
+   dayOne.activities.push({
+      title: place.name,
+      description: place.description || "",
+      activityType: place.category || "attraction",
+      imageUrl: (place.images && place.images.length > 0) ? place.images[0] : "",
+      locationInfo: place.address || ""
+   });
+
+   await tripDestination.save();
+
+   return res.status(200).json(
+      new ApiResponse(200, tripDestination, "Place successfully added to your itinerary")
+   );
+});

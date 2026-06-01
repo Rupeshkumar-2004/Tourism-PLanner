@@ -164,7 +164,7 @@ export const createDestination = asyncHandler(async (req, res) => {
 export const getAllDestinations = asyncHandler(async (req, res) => {
     // Build the Mongo filter ONCE and reuse it for both countDocuments and find.
     // This keeps pagination totals consistent with the actual returned data.
-    const filter = buildDestinationFilters(req.query);
+    let filter = buildDestinationFilters(req.query);
 
     // Validates page/limit and calculates skip.
     const { page, limit, skip } = parsePagination(req.query);
@@ -180,16 +180,49 @@ export const getAllDestinations = asyncHandler(async (req, res) => {
     const selectedFields = buildSelect(req.query, destinationSelectFields);
 
     // Counts ALL matching documents, not only the current page.
-    // This is why the frontend can know totalPages and hasNextPage.
-    const totalDocuments = await Destination.countDocuments(filter);
+    let totalDocuments = await Destination.countDocuments(filter);
 
     // Mongoose query methods are chainable and execute only when awaited.
-    // Order here means: filter -> select fields -> sort -> skip -> limit.
-    const destinations = await Destination.find(filter)
+    let destinations = await Destination.find(filter)
         .select(selectedFields)
         .sort(sortOptions)
         .skip(skip)
         .limit(limit);
+
+    // READ-THROUGH CACHE LOGIC
+    // If no destinations found, AND the user explicitly searched for something (city or general search)
+    if (destinations.length === 0 && (req.query.search || req.query.city)) {
+        const searchQuery = req.query.city || req.query.search;
+        console.log(`Cache miss for "${searchQuery}". Fetching from external API...`);
+        
+        try {
+            const { fetchAndFormatDestination } = await import("../services/externalApi.service.js");
+            const newDestinationData = await fetchAndFormatDestination(searchQuery);
+
+            if (newDestinationData) {
+                console.log(`Found city data for "${searchQuery}". Saving to DB...`);
+                
+                try {
+                    await Destination.create(newDestinationData);
+                } catch (insertError) {
+                    if (insertError.code !== 11000) { // Ignore duplicate key errors silently
+                        console.error("DB Insert Error during cache fill:", insertError);
+                    }
+                }
+
+                // Re-run the local database query now that the cache is populated
+                totalDocuments = await Destination.countDocuments(filter);
+                destinations = await Destination.find(filter)
+                    .select(selectedFields)
+                    .sort(sortOptions)
+                    .skip(skip)
+                    .limit(limit);
+            }
+        } catch (apiError) {
+            console.error("External API Read-Through Cache Error:", apiError);
+            // Fail gracefully
+        }
+    }
 
     return res.status(200).json(
         new ApiResponse(

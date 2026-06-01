@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import TopNavBar from '../../../../components/TopNavBar';
 import { useAuth } from '../../../../hooks/useAuth';
-import { ChevronRight, CalendarDays, Wallet, Map, User, Users, PlaneTakeoff, Heart } from 'lucide-react';
+import { ChevronRight, CalendarDays, Wallet, Map, User, Users, PlaneTakeoff, Heart, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const DestinationContent = ({ destination }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col">
@@ -124,6 +126,27 @@ const DestinationContent = ({ destination }) => {
               ></div>
             </div>
           </div>
+        </section>
+
+        {/* Explore Places CTA Banner */}
+        <section className="max-w-7xl mx-auto px-container-margin-mobile md:px-container-margin-desktop py-8">
+            <div className="bg-primary-container/10 rounded-2xl p-8 md:p-12 border border-primary-container/20 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2 capitalize">
+                        Discover 12+ Hidden Gems in {destination?.name}
+                    </h2>
+                    <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                        Uncover the most iconic architectural marvels, beautiful viewpoints, and cultural spots handpicked just for you.
+                    </p>
+                </div>
+                <button 
+                    onClick={() => navigate(`/destinations/${destination?._id}/places`)}
+                    className="shrink-0 px-8 py-4 bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:bg-primary/90 hover:-translate-y-1 transition-all shadow-md flex items-center justify-center gap-2 w-full md:w-auto"
+                >
+                    Explore Places
+                    <ArrowRight className="w-5 h-5" />
+                </button>
+            </div>
         </section>
 
         {/* Curated Itineraries (Bento Grid Style) */}

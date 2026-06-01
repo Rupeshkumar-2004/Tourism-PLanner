@@ -76,6 +76,7 @@ import destinationRouter from './routes/destination.route.js';
 import tripRouter from './routes/trip.route.js';
 import tripDestinationRouter from './routes/tripdestination.route.js';
 import dashboardRouter from './routes/dashboard.route.js';
+import placeRouter from './routes/place.route.js';
 
 //for User
 app.use("/api/v1/auth", authRouter);
@@ -83,6 +84,7 @@ app.use("/api/v1/auth", authRouter);
 //for Trips
 app.use("/api/v1/trips", tripRouter);
 app.use("/api/v1/destinations", destinationRouter);
+app.use("/api/v1/places", placeRouter);
 app.use("/api/v1", tripDestinationRouter);
 
 //for dashboard

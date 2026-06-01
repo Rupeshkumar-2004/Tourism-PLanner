@@ -29,16 +29,15 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
     setLocalSearch(search || '');
   }, [search]);
 
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
       if (localSearch !== search) {
         setSearch(localSearch);
         setPage(1);
       }
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [localSearch, search, setSearch, setPage]);
+    }
+  };
 
   const filters = standardFilters.filter(f => f !== 'All' && f !== 'Historical');
 
@@ -50,6 +49,10 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
   const clearSearch = (e) => {
     e.preventDefault();
     setLocalSearch('');
+    if (search !== '') {
+        setSearch('');
+        setPage(1);
+    }
   };
 
   const handleCategoryChange = (e, filter) => {
@@ -143,7 +146,8 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
               type="text"
               value={localSearch}
               onChange={handleSearchChange}
-              placeholder="Search for amazing destinations..."
+              onKeyDown={handleKeyDown}
+              placeholder="Search destinations (Press Enter to search)..."
               className="flex-1 bg-transparent border-none outline-none py-3 text-body-lg text-on-surface placeholder:text-on-surface-variant/60 focus:ring-0"
             />
             {localSearch && (

@@ -13,14 +13,21 @@ export const addDestinationToTrip = async (tripId, destinationId, options = {}) 
     return response.data.data;
 };
 
-export const updateTripDestination = async (tripId, tripDestinationId, updateData) => {
-    // Assuming backend patch route supports this via /trips/:tripId or /trip-destinations/:id
-    // This connects to the updateTripById backend controller we modified earlier if it handles nested itinerary updates
-    const response = await api.patch(`/trips/${tripId}`, updateData);
+export const updateTripDestination = async (tripDestinationId, updateData) => {
+    const response = await api.patch(`/trip-destinations/${tripDestinationId}`, updateData);
     return response.data.data;
 };
 
-export const removeDestinationFromTrip = async (tripId, tripDestinationId) => {
-    const response = await api.delete(`/trips/${tripId}/destinations/${tripDestinationId}`);
+export const removeDestinationFromTrip = async (tripDestinationId) => {
+    const response = await api.delete(`/trip-destinations/${tripDestinationId}`);
+    return response.data.data;
+};
+
+export const addPlaceToTripItinerary = async (tripId, destinationId, place) => {
+    const response = await api.post(`/trip-destinations/add-place`, {
+        tripId,
+        destinationId,
+        place
+    });
     return response.data.data;
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import usePlaces from '../hooks/usePlaces';
 import InteractiveMap from './InteractiveMap';
 

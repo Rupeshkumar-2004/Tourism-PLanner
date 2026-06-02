@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import usePlaces from '../hooks/usePlaces';
 import { Search, Map as MapIcon, Heart, Star, Plus } from 'lucide-react';
 import AddToTripModal from './AddToTripModal';

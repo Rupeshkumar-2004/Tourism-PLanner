@@ -1,83 +1,25 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import getDestinations from "../services/destinationsServices";
 
 function useDestinations() {
-    const [destinations, setDestinations] = useState([]);
-    const [pagination, setPagination] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('All');
 
-    const fetchData = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
-
-            const data = await getDestinations({ page, limit, search, category });
-
-            setDestinations(data.destinations);
-            setPagination(data.pagination);
-        } catch (error) {
-            const message =
-                error.response?.data?.message ||
-                "Failed to fetch destinations data";
-
-            setError(message);
-
-            setDestinations([]);
-            setPagination(null);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [page, limit, search, category]);
-
-    useEffect(() => {
-        let canceled = false;
-
-        const load = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
-
-                const data = await getDestinations({ page, limit, search, category });
-
-                if (!canceled) {
-                    setDestinations(data.destinations);
-                    setPagination(data.pagination);
-                }
-            } catch (error) {
-                if (!canceled) {
-                    const message =
-                        error.response?.data?.message ||
-                        "Failed to fetch destinations data";
-
-                    setError(message);
-                    setDestinations([]);
-                    setPagination(null);
-                }
-            } finally {
-                if (!canceled) {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        load();
-
-        return () => {
-            canceled = true;
-        };
-    }, [page, limit, search, category]);
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['destinations', { page, limit, search, category }],
+        queryFn: () => getDestinations({ page, limit, search, category }),
+        placeholderData: keepPreviousData // keep old data while fetching new page
+    });
 
     return {
-        destinations,
-        pagination,
+        destinations: data?.destinations || [],
+        pagination: data?.pagination || null,
         isLoading,
-        error,
-        refetchDestinations: fetchData,
+        error: error ? (error.response?.data?.message || error.message || "Failed to fetch destinations data") : null,
+        refetchDestinations: refetch,
         page,
         setPage,
         limit,

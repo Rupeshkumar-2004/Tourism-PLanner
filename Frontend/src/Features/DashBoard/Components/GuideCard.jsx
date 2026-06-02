@@ -1,8 +1,8 @@
 
-import { UserRound } from 'lucide-react';
+import { UserRound, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-function GuideCard({ id, title, description, image, imageAlt, badge, BadgeIcon }) {
+function GuideCard({ id, title, description, image, imageAlt, badge, BadgeIcon, email, phone }) {
   const Icon = BadgeIcon || UserRound;
   const cardTitle = title || 'Travel Guide';
   const cardDescription =
@@ -36,12 +36,33 @@ function GuideCard({ id, title, description, image, imageAlt, badge, BadgeIcon }
           {cardDescription}
         </p>
         <div className="mt-auto pt-4 border-t border-outline-variant/30">
-          <Link 
-            to={id ? `/destinations/${id}` : '#'}
-            className="w-full bg-primary text-on-primary hover:bg-primary/90 transition-colors py-2.5 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2"
-          >
-            View Guide
-          </Link>
+          {email || phone ? (
+            <div className="flex gap-2 w-full">
+              {email && (
+                <a 
+                  href={`mailto:${email}`}
+                  className="flex-1 bg-primary text-on-primary hover:bg-primary/90 transition-colors py-2.5 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2"
+                >
+                  <Mail size={16} /> Email
+                </a>
+              )}
+              {phone && (
+                <a 
+                  href={`tel:${phone}`}
+                  className="flex-1 bg-secondary text-on-secondary hover:bg-secondary/90 transition-colors py-2.5 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2"
+                >
+                  <Phone size={16} /> Call
+                </a>
+              )}
+            </div>
+          ) : (
+            <Link 
+              to={id ? `/destinations/${id}` : '#'}
+              className="w-full bg-primary text-on-primary hover:bg-primary/90 transition-colors py-2.5 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2"
+            >
+              View Guide
+            </Link>
+          )}
         </div>
       </div>
     </div>

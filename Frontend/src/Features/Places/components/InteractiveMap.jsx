@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { MapPin } from 'lucide-react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -47,7 +47,7 @@ const createCustomIcon = () => {
     });
 };
 
-const InteractiveMap = ({ places = [], title = "Interactive Region Map" }) => {
+const InteractiveMap = ({ places = [], title = "Interactive Region Map", showRoute = false }) => {
     const [mapReady, setMapReady] = useState(false);
 
     // Filter places to only those with valid coordinates
@@ -59,7 +59,8 @@ const InteractiveMap = ({ places = [], title = "Interactive Region Map" }) => {
 
     useEffect(() => {
         // Fix for React 18 strict mode double mounting issue with leaflet
-        setMapReady(true);
+        const timer = setTimeout(() => setMapReady(true), 0);
+        return () => clearTimeout(timer);
     }, []);
 
     if (!mapReady) return <div className="min-h-[300px] w-full bg-surface-variant/20 rounded-2xl animate-pulse"></div>;
@@ -106,6 +107,16 @@ const InteractiveMap = ({ places = [], title = "Interactive Region Map" }) => {
                                 </Popup>
                             </Marker>
                         ))}
+                        
+                        {showRoute && mapPlaces.length > 1 && (
+                            <Polyline 
+                                positions={mapPlaces.map(p => [p.lat, p.lon])} 
+                                color="#4F46E5" 
+                                weight={3} 
+                                opacity={0.7} 
+                                dashArray="10, 10" 
+                            />
+                        )}
                         
                         <MapBoundsRefresher places={mapPlaces} />
                     </MapContainer>

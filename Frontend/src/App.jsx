@@ -19,14 +19,13 @@ function App() {
 
           <Route path="/sign-up" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/destinations" element={<DestinationsPage />} />
-          <Route path="/destinations/:destinationId" element={<DestinationPage />} />
-          <Route path="/destinations/:destinationId/places" element={<PlacesPage />} />
-
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trips" element={<TripPage />} />
             <Route path="/trips/:tripId" element={<TripDetailPage />} />
+            <Route path="/destinations" element={<DestinationsPage />} />
+            <Route path="/destinations/:destinationId" element={<DestinationPage />} />
+            <Route path="/destinations/:destinationId/places" element={<PlacesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

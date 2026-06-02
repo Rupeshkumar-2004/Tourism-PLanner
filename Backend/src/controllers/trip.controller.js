@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Trip from '../models/trip.model.js';
+import TripDestination from '../models/tripdestination.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
@@ -340,6 +341,8 @@ export const deleteTripById = asyncHandler(async (req, res) => {
    if(!trip){
       throw new ApiError(404, "Trip not found");
    }
+
+   await TripDestination.deleteMany({ trip: tripId });
 
    return res.status(200)
              .json(

@@ -1,37 +1,16 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getDashboardData } from '../services/dashboardServices.js';
 
-export function useDashboardData(){
-    const [dashboardData, setDashboardData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const fetchData = async () => {
-        try{
-            setIsLoading(true);
-            setError(null);
-            const userData = await getDashboardData();
-            setDashboardData(userData);
-        }
-        catch(error){
-            const message = error.response?.data?.message || 'Failed to fetch dashboard data';
-            setError(message);
-            setDashboardData(null);
-        }
-        finally{
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        fetchData();
-    }, []);
+export function useDashboardData() {
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['dashboard'],
+        queryFn: getDashboardData
+    });
 
     return {
-        dashboardData,
+        dashboardData: data,
         isLoading,
-        error,
-        refetchDashboard: fetchData
+        error: error ? (error.response?.data?.message || error.message || "Failed to fetch dashboard data") : null,
+        refetchDashboard: refetch
     };
 }

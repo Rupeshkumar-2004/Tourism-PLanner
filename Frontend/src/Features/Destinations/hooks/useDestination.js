@@ -1,41 +1,17 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getDestinationById } from "../services/destinationServices";
 
 export default function useDestination(destinationId) {
-    const [destination, setDestination] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const fetchDestination = async () => {
-        setIsLoading(true);
-        try {
-            setError(null);
-            setDestination(null);
-            const data = await getDestinationById(destinationId);
-            setDestination(data);
-        } catch (err) {
-            setError(err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-
-        if (destinationId) {
-            fetchDestination();
-        }
-        else {
-            setError("Destination Id is required");
-            setIsLoading(false);
-            return;
-        }
-    }, [destinationId]);
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['destination', destinationId],
+        queryFn: () => getDestinationById(destinationId),
+        enabled: !!destinationId
+    });
 
     return {
-        destination,
+        destination: data,
         isLoading,
-        error,
-        refetchDestination: fetchDestination,
+        error: error ? (error.response?.data?.message || error.message || "Failed to fetch destination data") : null,
+        refetchDestination: refetch,
     };
 }

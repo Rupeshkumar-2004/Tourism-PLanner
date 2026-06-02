@@ -29,6 +29,7 @@ const ItineraryTimeline = ({ trip, refetchTrip }) => {
             await removeDestinationFromTrip(tripDestId);
             refetchTrip();
         } catch (error) {
+            console.error(error);
             alert("Failed to remove destination");
         } finally {
             setIsDeletingId(null);
@@ -44,6 +45,7 @@ const ItineraryTimeline = ({ trip, refetchTrip }) => {
             await updateTripDestination(tripDest._id, { itinerary: updatedItinerary });
             refetchTrip();
         } catch (error) {
+            console.error(error);
             alert("Failed to delete day");
         } finally {
             setIsDeletingId(null);
@@ -64,6 +66,7 @@ const ItineraryTimeline = ({ trip, refetchTrip }) => {
                 refetchTrip();
             }
         } catch (error) {
+            console.error(error);
             alert("Failed to delete activity");
         } finally {
             setIsDeletingId(null);

@@ -21,6 +21,7 @@ const AddDestinationModal = ({ isOpen, onClose, onSuccess, tripId }) => {
                     const data = await getDestinations({ limit: 50 });
                     setDestinations(data.destinations || []);
                 } catch (err) {
+                    console.error(err);
                     setError("Failed to load available destinations.");
                 }
             };
@@ -43,6 +44,7 @@ const AddDestinationModal = ({ isOpen, onClose, onSuccess, tripId }) => {
             onSuccess();
             onClose();
         } catch (err) {
+            console.error(err);
             setError(err.response?.data?.message || "Failed to add destination.");
         } finally {
             setIsLoading(false);

@@ -1,40 +1,16 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getTrips } from "../services/tripService";
 
 export function useTrips() {
-    const [tripsData, setTripsData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const fetchTrips = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
-
-                const data = await getTrips();
-
-                setTripsData(data);
-            } catch (error) {
-                const message =
-                    error.response?.data?.message ||
-                    "Failed to fetch trips";
-
-                setError(message);
-                setTripsData(null);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        fetchTrips();
-    }, []);
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['trips'],
+        queryFn: getTrips
+    });
 
     return {
-        tripsData,
+        tripsData: data,
         isLoading,
-        error,
-        refetchTrip : fetchTrips
+        error: error ? (error.response?.data?.message || error.message || "Failed to fetch trips") : null,
+        refetchTrip: refetch
     };
 }

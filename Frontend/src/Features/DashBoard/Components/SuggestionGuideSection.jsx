@@ -52,6 +52,7 @@ const SuggestionGuideSection = ({ guides = [] }) => {
           const guide = guideData || {};
           const fallback = defaultGuides[index % defaultGuides.length];
           const guideName =
+            guide.fullName ||
             guide.title ||
             guide.name ||
             guide.destination ||
@@ -81,6 +82,8 @@ const SuggestionGuideSection = ({ guides = [] }) => {
             imageAlt: guide.imageAlt || guide.alt || guideName,
             badge,
             BadgeIcon: badge === 'Group' ? Users : UserRound,
+            email: guide.email,
+            phone: guide.phone,
           };
         })
       : defaultGuides.map((guide) => ({
@@ -116,6 +119,8 @@ const SuggestionGuideSection = ({ guides = [] }) => {
             imageAlt={guide.imageAlt}
             badge={guide.badge}
             BadgeIcon={guide.BadgeIcon}
+            email={guide.email}
+            phone={guide.phone}
           />
         ))}
       </div>

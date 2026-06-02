@@ -1,32 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import api from '../../../services/api.js';
 
 const usePlaces = (destinationId) => {
-    const [places, setPlaces] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-
-    const fetchPlaces = async () => {
-        if (!destinationId) return;
-
-        setIsLoading(true);
-        setError(null);
-        try {
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['places', destinationId],
+        queryFn: async () => {
             const response = await api.get(`/places?destinationId=${destinationId}`);
-            setPlaces(response.data.data);
-        } catch (err) {
-            setError(err.response?.data?.message || 'Failed to fetch places');
-            console.error("Error fetching places:", err);
-        } finally {
-            setIsLoading(false);
-        }
+            return response.data.data;
+        },
+        enabled: !!destinationId
+    });
+
+    return {
+        places: data || [],
+        isLoading,
+        error: error ? (error.response?.data?.message || error.message || 'Failed to fetch places') : null,
+        refetchPlaces: refetch
     };
-
-    useEffect(() => {
-        fetchPlaces();
-    }, [destinationId]);
-
-    return { places, isLoading, error, refetchPlaces: fetchPlaces };
 };
 
 export default usePlaces;

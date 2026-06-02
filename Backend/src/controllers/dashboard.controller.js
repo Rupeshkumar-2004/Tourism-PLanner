@@ -99,11 +99,10 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
             },
         ]).then((result) => result[0]?.total ?? 0),
 
-        // 5. Suggested guides → popular destinations (limit to 3)
-        Destination.find()
-            .sort({ createdAt: -1 })
-            .select("name city category description images")
+        // 5. Suggested guides → user accounts with role 'guide' (limit to 3)
+        User.find({ role: "guide" })
             .limit(3)
+            .select("fullName email ProfilePicture phone")
             .lean(),
 
         // 6. Recent trips → user's latest 5 trips with first destination info
@@ -147,13 +146,12 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
             savedPlaces,
         },
 
-        suggestedGuides: suggestedGuides.map((dest) => ({
-            _id: dest._id,
-            name: dest.name,
-            city: dest.city,
-            category: dest.category,
-            description: dest.description,
-            coverImage: dest.images?.[0] ?? "",
+        suggestedGuides: suggestedGuides.map((guide) => ({
+            _id: guide._id,
+            fullName: guide.fullName,
+            email: guide.email,
+            ProfilePicture: guide.ProfilePicture,
+            phone: guide.phone,
         })),
 
         recentTrips: formattedRecentTrips,

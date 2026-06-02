@@ -1,45 +1,28 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getTripById } from "../services/tripService";
 import { getTripDestinations } from "../services/tripDestinationService";
 
 export function useTripDetail(tripId) {
-    const [trip, setTrip] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const fetchTrip = async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['trip', tripId],
+        queryFn: async () => {
             const [tripData, tripDestinationsData] = await Promise.all([
                 getTripById(tripId),
                 getTripDestinations(tripId)
             ]);
             
-            const mergedTrip = {
+            return {
                 ...tripData,
                 destinations: tripDestinationsData.destinations || []
             };
-            
-            setTrip(mergedTrip);
-        } catch (err) {
-            setError(err.response?.data?.message || "Failed to load trip details");
-            setTrip(null);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (tripId) {
-            fetchTrip();
-        }
-    }, [tripId]);
+        },
+        enabled: !!tripId // Only fetch if tripId exists
+    });
 
     return {
-        trip,
+        trip: data,
         isLoading,
-        error,
-        refetchTrip: fetchTrip
+        error: error ? (error.response?.data?.message || error.message || "Failed to load trip details") : null,
+        refetchTrip: refetch
     };
 }

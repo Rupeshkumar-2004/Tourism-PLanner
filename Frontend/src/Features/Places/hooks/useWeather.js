@@ -1,43 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getDestinationWeather } from '../services/weatherService';
 
 const useWeather = (destinationId) => {
-    const [weatherData, setWeatherData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['weather', destinationId],
+        queryFn: () => getDestinationWeather(destinationId),
+        enabled: !!destinationId
+    });
 
-    useEffect(() => {
-        if (!destinationId) return;
-
-        let isMounted = true;
-
-        const fetchWeather = async () => {
-            setIsLoading(true);
-            try {
-                const data = await getDestinationWeather(destinationId);
-                if (isMounted) {
-                    setWeatherData(data);
-                    setError(null);
-                }
-            } catch (err) {
-                if (isMounted) {
-                    setError(err.response?.data?.message || 'Failed to fetch weather data');
-                }
-            } finally {
-                if (isMounted) {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        fetchWeather();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [destinationId]);
-
-    return { weatherData, isLoading, error };
+    return { 
+        weatherData: data, 
+        isLoading, 
+        error: error ? (error.response?.data?.message || error.message || 'Failed to fetch weather data') : null 
+    };
 };
 
 export default useWeather;

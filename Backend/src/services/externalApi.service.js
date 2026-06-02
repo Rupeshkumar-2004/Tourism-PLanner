@@ -1,29 +1,33 @@
 import { ApiError } from "../utils/ApiError.js";
 
 /**
- * Helper to fetch a high-quality cover image for a destination from Unsplash.
+ * Helper to fetch high-quality cover images for a destination from Pexels.
  */
-export const getUnsplashImageForPlace = async (searchQuery) => {
-    const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
-    if (!UNSPLASH_ACCESS_KEY) {
-        console.warn("UNSPLASH_ACCESS_KEY is not set. Falling back to empty images.");
+export const getPexelsImageForPlace = async (searchQuery, limit = 5) => {
+    const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
+    if (!PEXELS_API_KEY) {
+        console.warn("PEXELS_API_KEY is not set. Falling back to empty images.");
         return [];
     }
 
     try {
-        const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchQuery)}&orientation=landscape&per_page=3&client_id=${UNSPLASH_ACCESS_KEY}`;
-        const response = await fetch(url);
+        const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(searchQuery)}&per_page=${limit}`;
+        const response = await fetch(url, {
+            headers: {
+                Authorization: PEXELS_API_KEY
+            }
+        });
 
         if (!response.ok) {
-            console.error("Unsplash API Error:", await response.text());
+            console.error("Pexels API Error:", await response.text());
             return [];
         }
 
         const data = await response.json();
-        // Return an array of regular-sized image URLs
-        return data.results.map(photo => photo.urls.regular);
+        // Return an array of landscape image URLs
+        return data.photos.map(photo => photo.src.landscape);
     } catch (error) {
-        console.error("Failed to fetch image from Unsplash:", error);
+        console.error("Failed to fetch image from Pexels:", error);
         return [];
     }
 };
@@ -78,9 +82,9 @@ export const getWeatherForCity = async (cityName) => {
         }
 
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=3`;
-        
+
         const response = await fetch(url);
-        
+
         if (!response.ok) {
             throw new Error(`Open-Meteo API failed: ${response.statusText}`);
         }
@@ -137,9 +141,9 @@ export const fetchAndFormatDestination = async (searchQuery) => {
         return null; // Location could not be resolved
     }
 
-    // 2. Fetch beautiful cover images for the city
-    const imageQuery = `${locationData.city}, ${locationData.state}, ${locationData.country}`;
-    const images = await getUnsplashImageForPlace(imageQuery);
+    // 2. Fetch beautiful cover images for the city from Pexels
+    const imageQuery = `${locationData.city}, ${locationData.country} tourism`;
+    const images = await getPexelsImageForPlace(imageQuery, 5);
 
     // 3. Generate beautiful AI description for the city
     const { generateDestinationDescription } = await import("./ai.service.js");
@@ -189,9 +193,7 @@ export const fetchAndFormatPlaces = async (destinationDoc) => {
         descriptionsMap = await generatePlaceDescriptions(destinationDoc.city, placeNames);
     }
 
-    const formattedPlaces = [];
-
-    for (const feature of validPlaces) {
+    const formattedPlacesPromises = validPlaces.map(async (feature) => {
         const props = feature.properties;
 
         const rawCategories = props.categories || [];
@@ -204,18 +206,23 @@ export const fetchAndFormatPlaces = async (destinationDoc) => {
         // Get AI description or fallback
         const description = descriptionsMap[props.name] || `A notable ${mainCategory.replace(/_/g, ' ')} located in ${destinationDoc.city}. ${props.address_line2 || ""}`.trim();
 
-        formattedPlaces.push({
+        // Fetch 2 images per place from Pexels
+        const imageQuery = `${props.name} ${destinationDoc.city} tourism`;
+        const images = await getPexelsImageForPlace(imageQuery, 2);
+
+        return {
             destination: destinationDoc._id,
             name: props.name,
             description: description,
             category: mainCategory,
             tags: tags.slice(0, 5),
-            images: [], // We skip Unsplash for places to avoid rate limits and irrelevant photos
+            images: images,
             lat: props.lat,
             lon: props.lon,
             address: props.formatted || ""
-        });
-    }
+        };
+    });
+    const formattedPlaces = await Promise.all(formattedPlacesPromises);
 
     return formattedPlaces;
 };

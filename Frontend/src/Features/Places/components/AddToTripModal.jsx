@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTrips } from '../../Trips/hooks/useTrips';
 import { addPlaceToTripItinerary } from '../../Trips/services/tripDestinationService';
 import { X, MapPin, Loader2, CheckCircle2 } from 'lucide-react';

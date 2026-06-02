@@ -30,7 +30,7 @@ const placeSchema = new Schema(
         description: {
             type: String,
             trim: true,
-            maxlength: [2000, "Description cannot exceed 2000 characters"],
+            maxlength: [3000, "Description cannot exceed 3000 characters"],
         },
         category: {
             type: String,

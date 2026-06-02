@@ -1,4 +1,4 @@
-import React from 'react';
+
 import useWeather from '../hooks/useWeather';
 import { 
     Sun, Cloud, CloudSun, CloudRain, CloudSnow, CloudLightning, 

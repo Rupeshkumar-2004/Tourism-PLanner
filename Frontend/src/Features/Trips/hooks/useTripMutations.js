@@ -1,54 +1,67 @@
-import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTrip, updateTrip, deleteTrip } from "../services/tripService";
 
 export function useTripMutations(onSuccessCallback) {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const queryClient = useQueryClient();
+
+    const createMutation = useMutation({
+        mutationFn: createTrip,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['trips'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+            if (onSuccessCallback) onSuccessCallback();
+        }
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: ({ id, tripData }) => updateTrip(id, tripData),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['trips'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+            queryClient.invalidateQueries({ queryKey: ['trip', variables.id] });
+            if (onSuccessCallback) onSuccessCallback();
+        }
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: deleteTrip,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['trips'] });
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+            if (onSuccessCallback) onSuccessCallback();
+        }
+    });
 
     const handleCreate = async (tripData) => {
-        setIsLoading(true);
-        setError(null);
         try {
-            await createTrip(tripData);
-            if (onSuccessCallback) onSuccessCallback();
+            await createMutation.mutateAsync(tripData);
             return true;
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to create trip");
             return false;
-        } finally {
-            setIsLoading(false);
         }
     };
 
     const handleUpdate = async (id, tripData) => {
-        setIsLoading(true);
-        setError(null);
         try {
-            await updateTrip(id, tripData);
-            if (onSuccessCallback) onSuccessCallback();
+            await updateMutation.mutateAsync({ id, tripData });
             return true;
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to update trip");
             return false;
-        } finally {
-            setIsLoading(false);
         }
     };
 
     const handleDelete = async (id) => {
-        setIsLoading(true);
-        setError(null);
         try {
-            await deleteTrip(id);
-            if (onSuccessCallback) onSuccessCallback();
+            await deleteMutation.mutateAsync(id);
             return true;
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to delete trip");
             return false;
-        } finally {
-            setIsLoading(false);
         }
     };
+
+    const isLoading = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+    const errorObj = createMutation.error || updateMutation.error || deleteMutation.error;
+    const error = errorObj ? (errorObj.response?.data?.message || errorObj.message || "Operation failed") : null;
 
     return {
         createTrip: handleCreate,

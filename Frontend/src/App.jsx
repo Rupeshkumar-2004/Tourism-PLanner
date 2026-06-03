@@ -9,6 +9,7 @@ import DestinationsPage from "./Features/Destinations/Page/DestinationsPage.jsx"
 import DestinationPage from "./Features/Destinations/Page/DestinationPage.jsx";
 import PlacesPage from "./Features/Places/Page/PlacesPage.jsx";
 import TripDetailPage from "./Features/Trips/Pages/TripDetailPage.jsx";
+import SpontaneousPage from "./Features/Spontaneous/Page/SpontaneousPage.jsx";
 
 function App() {
   return (
@@ -19,13 +20,15 @@ function App() {
 
           <Route path="/sign-up" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/destinations" element={<DestinationsPage />} />
+          <Route path="/destinations/:destinationId" element={<DestinationPage />} />
+          <Route path="/destinations/:destinationId/places" element={<PlacesPage />} />
+          <Route path="/spontaneous" element={<SpontaneousPage />} />
+
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/trips" element={<TripPage />} />
             <Route path="/trips/:tripId" element={<TripDetailPage />} />
-            <Route path="/destinations" element={<DestinationsPage />} />
-            <Route path="/destinations/:destinationId" element={<DestinationPage />} />
-            <Route path="/destinations/:destinationId/places" element={<PlacesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

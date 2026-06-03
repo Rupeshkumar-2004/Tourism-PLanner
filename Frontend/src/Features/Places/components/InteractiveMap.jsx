@@ -47,7 +47,13 @@ const createCustomIcon = () => {
     });
 };
 
-const InteractiveMap = ({ places = [], title = "Interactive Region Map", showRoute = false }) => {
+const InteractiveMap = ({ 
+    places = [], 
+    title = "Interactive Region Map", 
+    showRoute = false,
+    containerClassName = "bg-surface-container-lowest border border-surface-variant rounded-2xl p-6 shadow-sm flex flex-col h-[400px]",
+    hideTitle = false
+}) => {
     const [mapReady, setMapReady] = useState(false);
 
     // Filter places to only those with valid coordinates
@@ -68,8 +74,8 @@ const InteractiveMap = ({ places = [], title = "Interactive Region Map", showRou
     const customIcon = createCustomIcon();
 
     return (
-        <div className="bg-surface-container-lowest border border-surface-variant rounded-2xl p-6 shadow-sm flex flex-col h-[400px]">
-            <h3 className="font-title-lg text-title-lg text-on-surface mb-4">{title}</h3>
+        <div className={containerClassName}>
+            {!hideTitle && <h3 className="font-title-lg text-title-lg text-on-surface mb-4">{title}</h3>}
             
             {mapPlaces.length === 0 ? (
                 <div className="flex-1 bg-surface-variant/20 rounded-xl flex items-center justify-center">

@@ -7,6 +7,7 @@ const navLinks = [
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'Destinations', to: '/destinations' },
   { label: 'My Trips', to: '/trips' },
+  { label: 'Spontaneous', to: '/spontaneous' },
 ];
 
 const getInitials = (name = '') =>

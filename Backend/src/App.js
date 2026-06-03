@@ -77,6 +77,7 @@ import tripRouter from './routes/trip.route.js';
 import tripDestinationRouter from './routes/tripdestination.route.js';
 import dashboardRouter from './routes/dashboard.route.js';
 import placeRouter from './routes/place.route.js';
+import spontaneousRouter from './routes/spontaneous.route.js';
 
 //for User
 app.use("/api/v1/auth", authRouter);
@@ -89,6 +90,9 @@ app.use("/api/v1", tripDestinationRouter);
 
 //for dashboard
 app.use("/api/v1/dashboard", dashboardRouter);
+
+//for spontaneous
+app.use("/api/v1/spontaneous", spontaneousRouter);
 
 /*
 ==================== HEALTH CHECK ROUTE ====================

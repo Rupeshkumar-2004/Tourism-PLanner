@@ -124,35 +124,35 @@ Flow:
 */
 
 class ApiError extends Error {
-    constructor(
-        statusCode,
-        message = "Something went wrong",
-        errors = [], // fixed name
-        stack = ""
-    ) {
-        // Call parent Error constructor with message
-        super(message);
+  constructor(
+    statusCode,
+    message = "Something went wrong",
+    errors = [],
+    stack = ""
+  ) {
+    // Call parent Error constructor with message
+    super(message);
 
-        // HTTP status code (e.g., 404, 500)
-        this.statusCode = statusCode;
+    // HTTP status code (e.g., 404, 500)
+    this.statusCode = statusCode;
 
-        // Optional: additional data (can be used later)
-        this.data = null;
+    // Optional: additional data (can be used later)
+    this.data = null;
 
-        // Indicates request failed
-        this.success = false;
+    // Indicates request failed
+    this.success = false;
 
-        // Array of detailed errors (validation errors, etc.)
-        this.errors = errors;
+    // Array of detailed errors (validation errors, etc.)
+    this.errors = errors;
 
-        // Stack trace handling
-        if (stack) {
-            this.stack = stack;
-        } else {
-            // Cleaner stack trace (removes constructor call from trace)
-            Error.captureStackTrace(this, this.constructor);
-        }
+    // Stack trace handling
+    if (stack) {
+      this.stack = stack;
+    } else {
+      // Cleaner stack trace (removes constructor call from trace)
+      Error.captureStackTrace(this, this.constructor);
     }
+  }
 }
 
 export { ApiError };

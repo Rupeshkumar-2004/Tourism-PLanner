@@ -52,6 +52,7 @@ const buildDestinationFilters = (query) => {
             { name: regexFilter(query.search) },
             { description: regexFilter(query.search) },
             { city: regexFilter(query.search) },
+            { state: regexFilter(query.search) },
             { country: regexFilter(query.search) },
             { category: regexFilter(query.search) },
             { tags: regexFilter(query.search) },
@@ -65,6 +66,12 @@ const buildDestinationFilters = (query) => {
         filter.city = String(query.city).includes(",")
             ? regexInFilter(query.city)
             : regexFilter(query.city);
+    }
+    
+    if (query.state) {
+        filter.state = String(query.state).includes(",")
+            ? regexInFilter(query.state)
+            : regexFilter(query.state);
     }
 
     // Same pattern as city: exact API shape, safe MongoDB filter output.

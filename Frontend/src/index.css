@@ -20,6 +20,15 @@
   --color-tertiary-fixed: #ccfbf1;
   --color-error: #dc2626;
   --color-error-fixed: #fee2e2;
+  
+  /* Additional aliases for Spontaneous Page */
+  --color-background: var(--color-surface);
+  --color-on-background: var(--color-on-surface);
+  --color-surface-container-low: #f8fafc; /* slightly lighter than surface */
+  --color-surface-container-lowest: #ffffff;
+  
+  --font-headline: "Eb Garamond", serif;
+  --font-body: "Manrope", sans-serif;
 
   --font-display: Inter, ui-sans-serif, system-ui, sans-serif;
   --font-body-lg: Inter, ui-sans-serif, system-ui, sans-serif;

@@ -72,6 +72,65 @@ export const getCoordinatesForCity = async (cityName) => {
 };
 
 /**
+ * Gets city, state, and country from latitude and longitude using Geoapify Reverse Geocoding API.
+ */
+export const getCityFromCoordinates = async (lat, lon) => {
+    const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
+    if (!GEOAPIFY_API_KEY) {
+        throw new ApiError(500, "GEOAPIFY_API_KEY is not configured on the server.");
+    }
+
+    try {
+        const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${GEOAPIFY_API_KEY}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Geoapify Reverse Geocoding API failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.results || data.results.length === 0) {
+            return null; // Location not found
+        }
+
+        // Pick the best match
+        const bestMatch = data.results[0];
+
+        return {
+            city: bestMatch.city || bestMatch.county || "Unknown City",
+            state: bestMatch.state || "Unknown State",
+            country: bestMatch.country || "Unknown Country",
+            formatted: bestMatch.formatted
+        };
+    } catch (error) {
+        console.error("Reverse Geocoding Error:", error);
+        throw new ApiError(500, "Failed to resolve location name from coordinates.");
+    }
+};
+
+/**
+ * Gets real-time weather and 3-day forecast using Open-Meteo API using coordinates.
+ */
+export const getWeatherForCoordinates = async (lat, lon) => {
+    try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=3`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`Open-Meteo API failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Weather Fetch Error:", error);
+        throw new ApiError(500, "Failed to fetch weather data.");
+    }
+};
+
+/**
  * Gets real-time weather and 3-day forecast using Open-Meteo API.
  */
 export const getWeatherForCity = async (cityName) => {
@@ -196,12 +255,7 @@ export const fetchAndFormatPlaces = async (destinationDoc) => {
     const formattedPlacesPromises = validPlaces.map(async (feature) => {
         const props = feature.properties;
 
-        const rawCategories = props.categories || [];
-        const tags = rawCategories
-            .map(c => c.split('.').pop())
-            .filter(tag => tag !== "tourism");
-
-        const mainCategory = tags.length > 0 ? tags[0] : "attraction";
+        const mainCategory = "attraction";
 
         // Get AI description or fallback
         const description = descriptionsMap[props.name] || `A notable ${mainCategory.replace(/_/g, ' ')} located in ${destinationDoc.city}. ${props.address_line2 || ""}`.trim();
@@ -215,7 +269,7 @@ export const fetchAndFormatPlaces = async (destinationDoc) => {
             name: props.name,
             description: description,
             category: mainCategory,
-            tags: tags.slice(0, 5),
+            tags: [mainCategory],
             images: images,
             lat: props.lat,
             lon: props.lon,
@@ -225,4 +279,27 @@ export const fetchAndFormatPlaces = async (destinationDoc) => {
     const formattedPlaces = await Promise.all(formattedPlacesPromises);
 
     return formattedPlaces;
+};
+
+/**
+ * Generates a Static Map URL using Geoapify
+ */
+export const getStaticMapUrl = (lat, lon, zoom = 14, markers = []) => {
+    const GEOAPIFY_API_KEY = process.env.GEOAPIFY_API_KEY;
+    if (!GEOAPIFY_API_KEY) {
+        return "";
+    }
+
+    // Default marker for user location
+    let markerString = `lonlat:${lon},${lat};type:awesome;color:#c2652a`;
+
+    // Add additional markers if provided
+    markers.forEach((m, i) => {
+        if (m.lat && m.lon) {
+            // Using a different color (teal) for suggestions
+            markerString += `|lonlat:${m.lon},${m.lat};type:material;color:#0f766e;text:${i + 1}`;
+        }
+    });
+
+    return `https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=800&height=500&center=lonlat:${lon},${lat}&zoom=${zoom}&marker=${encodeURIComponent(markerString)}&apiKey=${GEOAPIFY_API_KEY}`;
 };

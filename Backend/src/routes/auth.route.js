@@ -1,10 +1,5 @@
 import express from "express";
-import {
-    registerUser,
-    loginUser,
-    refreshAccessToken,
-    getCurrentUser
-} from "../controllers/auth.controller.js";
+import { registerUser, loginUser, refreshAccessToken, getCurrentUser } from "../controllers/auth.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();

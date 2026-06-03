@@ -1,6 +1,4 @@
 import React from "react";
-import TopNavBar from "../../../../components/TopNavBar.jsx";
-import { useAuth } from "../../../../hooks/useAuth.js";
 import DestinationCard from "./DestinationsCard.jsx";
 import DestinationEmpty from "./DestinationsEmpty.jsx";
 
@@ -20,7 +18,6 @@ const standardFilters = [
 ];
 
 const DestinationContent = ({ destinations = [], pagination, setPage, page, search, setSearch, category, setCategory, isLoading }) => {
-  const { user } = useAuth();
   const filterScrollRef = React.useRef(null);
 
   const [localSearch, setLocalSearch] = React.useState(search || '');
@@ -128,8 +125,6 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
 
   return (
     <div className="bg-surface text-on-surface font-body-md text-body-md antialiased pb-24 md:pb-0 min-h-screen">
-      <TopNavBar user={user?.fullName} />
-
       <main className="max-w-[1440px] mx-auto px-5 md:px-12 pt-12 pb-16">
         {/* Hero Section */}
         <section className="mb-16 flex flex-col items-center text-center">

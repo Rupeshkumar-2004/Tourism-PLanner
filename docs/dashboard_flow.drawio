@@ -1,0 +1,134 @@
+<mxfile host="Electron" modified="2026-06-03T18:35:00.000Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="dashboard-flow-diagram" name="Dashboard-Flow">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" adaptiveColors="auto" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Header Title -->
+        <mxCell id="title" value="DASHBOARD DATA AGGREGATION FLOW" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=18;fontColor=#1a237e;" vertex="1" parent="1">
+          <mxGeometry x="327" y="30" width="1000" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Nodes -->
+        <mxCell id="start_req" value="&lt;b&gt;START&lt;/b&gt;&lt;br&gt;GET /dashboard-stats" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="550" y="120" width="100" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="auth_mw" value="&lt;b&gt;Auth Middleware&lt;/b&gt;&lt;br&gt;Extract req.user._id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="270" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="parallel_start" value="&lt;b&gt;Promise.all()&lt;/b&gt;&lt;br&gt;Execute DB Queries in Parallel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="420" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- DB Nodes Row 3 -->
+        <mxCell id="db_user" value="&lt;b&gt;User DB&lt;/b&gt;&lt;br&gt;Fetch Profile Details" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="570" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db_upcoming" value="&lt;b&gt;Trip DB&lt;/b&gt;&lt;br&gt;Count Upcoming Trips&lt;br&gt;(startDate &amp;gt; now)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="570" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db_visited" value="&lt;b&gt;TripDestination DB&lt;/b&gt;&lt;br&gt;Count Visited Places&lt;br&gt;(endDate &amp;lt; now)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="570" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- DB Nodes Row 4 -->
+        <mxCell id="db_saved" value="&lt;b&gt;TripDestination DB&lt;/b&gt;&lt;br&gt;Count Saved Places&lt;br&gt;(Unique Total)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="720" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db_suggested" value="&lt;b&gt;Destination DB&lt;/b&gt;&lt;br&gt;Fetch 3 Suggested Places" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="720" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db_recent" value="&lt;b&gt;Trip DB&lt;/b&gt;&lt;br&gt;Fetch 5 Recent Trips&lt;br&gt;(Populate 1st Dest)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="720" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Formatting and Output -->
+        <mxCell id="format_data" value="&lt;b&gt;Data Formatting&lt;/b&gt;&lt;br&gt;Shape Recent Trips &amp;amp; Dests" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="870" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="send_res" value="&lt;b&gt;END / OUTPUT&lt;/b&gt;&lt;br&gt;Return Dashboard JSON" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="535" y="1020" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e_start" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="start_req" target="auth_mw" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_auth" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="auth_mw" target="parallel_start" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Parallel branches out -->
+        <mxCell id="e_p_u" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="parallel_start" target="db_user" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p_upc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="parallel_start" target="db_upcoming" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p_vis" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="parallel_start" target="db_visited" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p_sav" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="parallel_start" target="db_saved" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p_sug" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="parallel_start" target="db_suggested" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_p_rec" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="parallel_start" target="db_recent" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Parallel branches in -->
+        <!-- Because orthogonalEdgeStyle might get messy with 6 edges converging, 
+             let's route them cleanly. -->
+        <mxCell id="e_u_f" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="db_user" target="format_data" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_upc_f" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="db_upcoming" target="format_data" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_vis_f" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="db_visited" target="format_data" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sav_f" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="db_saved" target="format_data" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_sug_f" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="db_suggested" target="format_data" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rec_f" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="db_recent" target="format_data" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Final Output -->
+        <mxCell id="e_fmt_out" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" source="format_data" target="send_res" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Legend Box (Bottom-Left) -->
+        <mxCell id="legend_bg" value="&lt;b&gt;LEGEND&lt;/b&gt;" style="swimlane;startSize=24;fillColor=#f5f5f5;strokeColor=#cccccc;html=1;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="50" y="850" width="280" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_process" value="Controller Logic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="10" y="35" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_ref" value="Database Query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="140" y="35" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_solution" value="JSON Output" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="10" y="70" width="120" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- Scope Box (Below Legend) -->
+        <mxCell id="scope_box" value="&lt;b&gt;Scope:&lt;/b&gt; Dashboard Data Aggregation Pipeline&lt;br&gt;&lt;b&gt;Author:&lt;/b&gt; Antigravity Agent&lt;br&gt;&lt;b&gt;Date:&lt;/b&gt; 2026-06-04" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1060" width="280" height="70" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

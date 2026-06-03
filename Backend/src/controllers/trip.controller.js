@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { z } from 'zod';
 import Trip from '../models/trip.model.js';
 import TripDestination from '../models/tripdestination.model.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -71,40 +72,36 @@ const buildTripFilters = (query, userId) => {
    return filter;
 };
 
+const createTripSchema = z.object({
+   title: z.string().trim().min(1, 'Title is required'),
+   description: z.string().optional(),
+   category: z.string().optional(),
+   startDate: z.coerce.date(),
+   endDate: z.coerce.date(),
+   totalBudget: z.coerce.number().min(0, 'Total budget cannot be negative')
+}).refine(data => data.endDate >= data.startDate, {
+   message: 'End date must be after or equal to start date',
+   path: ['endDate']
+});
+
+const updateTripSchema = z.object({
+   title: z.string().trim().min(1, 'Title cannot be empty').optional(),
+   description: z.string().optional(),
+   category: z.string().optional(),
+   bannerImage: z.string().url().optional(),
+   startDate: z.coerce.date().optional(),
+   endDate: z.coerce.date().optional(),
+   totalBudget: z.coerce.number().min(0, 'Total budget cannot be negative').optional()
+});
+
 export const createTrip = asyncHandler(async (req, res) => {
-
-   const { title, description, startDate, endDate, totalBudget, category } = req.body;
-
-   if (
-      typeof title !== "string" ||
-      title.trim() === "" ||
-      !startDate ||
-      !endDate ||
-      totalBudget === undefined
-   ) {
-      throw new ApiError(400, "All required fields must be provided");
+   const parsed = createTripSchema.safeParse(req.body);
+   
+   if (!parsed.success) {
+      throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
    }
 
-   const start = new Date(startDate);
-   const end = new Date(endDate);
-
-   if (Number.isNaN(start.getTime())) {
-      throw new ApiError(400, "Invalid start date");
-   }
-
-   if (Number.isNaN(end.getTime())) {
-      throw new ApiError(400, "Invalid end date");
-   }
-
-   if (end < start) {
-      throw new ApiError(400, "End date must be after or equal to start date");
-   }
-
-   const budgetNumber = Number(totalBudget);
-
-   if (Number.isNaN(budgetNumber) || budgetNumber < 0) {
-      throw new ApiError(400, "Total budget cannot be negative");
-   }
+   const { title, description, startDate, endDate, totalBudget, category } = parsed.data;
 
    // Assign pre-stored banner based on category
    const bannerImages = {
@@ -124,9 +121,9 @@ export const createTrip = asyncHandler(async (req, res) => {
       description,
       category: tripCategory,
       bannerImage,
-      startDate: start,
-      endDate: end,
-      totalBudget: budgetNumber,
+      startDate,
+      endDate,
+      totalBudget,
       createdBy: req.user._id
    });
 
@@ -228,9 +225,7 @@ export const getTripById = asyncHandler(async (req, res) => {
 });
 
 export const updateTripById = asyncHandler(async (req, res) => {
-      
    const tripId = req.params.tripId;
-   const { title, description, startDate, endDate, totalBudget, category, bannerImage } = req.body;
 
    if (!mongoose.isValidObjectId(tripId)) {
       throw new ApiError(400, "Invalid trip id");
@@ -239,27 +234,25 @@ export const updateTripById = asyncHandler(async (req, res) => {
    if (Object.keys(req.body).length === 0) {
       throw new ApiError(400, "At least one field is required to update");
    }
+
+   const parsed = updateTripSchema.safeParse(req.body);
+   if (!parsed.success) {
+      throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
+   }
+
+   const { title, description, startDate, endDate, totalBudget, category, bannerImage } = parsed.data;
    
    const trip = await Trip.findOne({
       _id: tripId,
       createdBy: req.user._id
    });
 
-   if(!trip){
+   if (!trip) {
       throw new ApiError(404, 'Invalid Trip');
    }
 
-   if (title !== undefined) {
-      if (typeof title !== "string" || title.trim() === "") {
-         throw new ApiError(400, "Title cannot be empty");
-      }
-
-      trip.title = title;
-   }
-
-   if (description !== undefined) {
-      trip.description = description;
-   }
+   if (title !== undefined) trip.title = title;
+   if (description !== undefined) trip.description = description;
 
    if (category !== undefined) {
       trip.category = category;
@@ -277,39 +270,10 @@ export const updateTripById = asyncHandler(async (req, res) => {
       }
    }
 
-   if (bannerImage !== undefined) {
-      trip.bannerImage = bannerImage;
-   }
-
-   if (startDate !== undefined) {
-      const start = new Date(startDate);
-
-      if (Number.isNaN(start.getTime())) {
-         throw new ApiError(400, "Invalid start date");
-      }
-
-      trip.startDate = start;
-   }
-
-   if (endDate !== undefined) {
-      const end = new Date(endDate);
-
-      if (Number.isNaN(end.getTime())) {
-         throw new ApiError(400, "Invalid end date");
-      }
-
-      trip.endDate = end;
-   }
-
-   if (totalBudget !== undefined) {
-      const budgetNumber = Number(totalBudget);
-
-      if(Number.isNaN(budgetNumber) || budgetNumber < 0){
-         throw new ApiError(400, 'Total budget cannot be negative');
-      }
-
-      trip.totalBudget = budgetNumber;
-   }
+   if (bannerImage !== undefined) trip.bannerImage = bannerImage;
+   if (startDate !== undefined) trip.startDate = startDate;
+   if (endDate !== undefined) trip.endDate = endDate;
+   if (totalBudget !== undefined) trip.totalBudget = totalBudget;
 
    if (trip.endDate < trip.startDate) {
       throw new ApiError(400, "End date must be after or equal to start date");

@@ -4,6 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { z } from 'zod';
 
 // Helper function to generate tokens
 // Keeps controller clean and reusable
@@ -33,32 +34,28 @@ const generateAccessAndRefreshTokens = async (userId) => {
     }
 };
 
+const registerSchema = z.object({
+    fullName: z.string().trim().min(1, 'Full name is required'),
+    email: z.string().trim().email('Invalid email format'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    role: z.enum(['user', 'admin']).optional(),
+    phone: z.string().regex(/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number').optional()
+});
+
+const loginSchema = z.object({
+    email: z.string().trim().email('Invalid email format'),
+    password: z.string().min(1, 'Password is required')
+});
+
 // ---------------- REGISTER ----------------
 
 export const registerUser = asyncHandler(async (req, res) => {
-
-    const { fullName, email, password, role, phone } = req.body;
-
-    // Validate required fields
-    if (
-        [fullName, email, password].some(field =>
-            typeof field !== 'string' || field.trim() === ''
-        )
-    ) {
-        throw new ApiError(400, 'All fields are required');
+    const parsed = registerSchema.safeParse(req.body);
+    if (!parsed.success) {
+        throw new ApiError(400, parsed.error.errors.map(e => e.message).join(', '));
     }
 
-    if (password.length < 6) {
-        throw new ApiError(400, 'Password must be at least 6 characters');
-    }
-
-    if (role !== undefined && !['user', 'guide', 'admin'].includes(role.toLowerCase())) {
-        throw new ApiError(400, 'Invalid role. Allowed values: user, guide');
-    }
-
-    if (phone !== undefined && !/^[0-9]{10}$/.test(phone)) {
-        throw new ApiError(400, 'Please provide a valid 10-digit phone number');
-    }
+    const { fullName, email, password, role, phone } = parsed.data;
 
     // Check if user already exists
     const isUserExists = await User.findOne({ email });
@@ -135,18 +132,12 @@ export const registerUser = asyncHandler(async (req, res) => {
 // ---------------- LOGIN ----------------
 
 export const loginUser = asyncHandler(async (req, res) => {
-
-    const { email, password } = req.body;
-
-    //Validate input
-    if (
-        typeof email !== 'string' ||
-        email.trim() === '' ||
-        typeof password !== 'string' ||
-        password.trim() === ''
-    ) {
-        throw new ApiError(400, 'Email and password are required');
+    const parsed = loginSchema.safeParse(req.body);
+    if (!parsed.success) {
+        throw new ApiError(400, parsed.error.errors.map(e => e.message).join(', '));
     }
+
+    const { email, password } = parsed.data;
 
     // Find user
     const user = await User.findOne({ email });

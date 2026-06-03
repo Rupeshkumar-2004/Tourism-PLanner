@@ -1,0 +1,135 @@
+<mxfile host="Electron" modified="2026-06-03T18:50:00.000Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="places-architecture" name="Places-Architecture">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1100" adaptiveColors="auto" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Main Title -->
+        <mxCell id="title" value="PLACES DATA MODEL &amp; CONTROLLER FLOW" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=18;fontColor=#1a237e;" vertex="1" parent="1">
+          <mxGeometry x="100" y="20" width="800" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- FLOW 1: Places Controller Flow -->
+        <mxCell id="start_req" value="&lt;b&gt;START&lt;/b&gt;&lt;br&gt;GET /places&lt;br&gt;?destinationId=..." style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="80" width="120" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="validate" value="&lt;b&gt;Validation&lt;/b&gt;&lt;br&gt;Check isValidObjectId" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="200" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_find_1" value="&lt;b&gt;MongoDB&lt;/b&gt;&lt;br&gt;Place.find( { destination } )" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="430" y="320" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="check_places" value="&lt;b&gt;Places Found?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="440" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- NO PATH (Cache Miss) -->
+        <mxCell id="db_get_dest" value="&lt;b&gt;MongoDB&lt;/b&gt;&lt;br&gt;Destination.findById()&lt;br&gt;(Need coords/city)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="440" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="api_places" value="&lt;b&gt;External API Service&lt;/b&gt;&lt;br&gt;fetchAndFormatPlaces()&lt;br&gt;(Geoapify)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="560" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db_insert" value="&lt;b&gt;MongoDB&lt;/b&gt;&lt;br&gt;Place.insertMany(newPlaces)&lt;br&gt;(Ignores duplicates)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="680" width="160" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db_find_2" value="&lt;b&gt;MongoDB&lt;/b&gt;&lt;br&gt;Re-fetch Place.find()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="800" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- YES PATH & END -->
+        <mxCell id="send_res" value="&lt;b&gt;OUTPUT&lt;/b&gt;&lt;br&gt;Return JSON Payload" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="900" width="120" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Edges Flow 1 -->
+        <mxCell id="e_s1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;" edge="1" source="start_req" target="validate" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_v1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;" edge="1" source="validate" target="db_find_1" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;" edge="1" source="db_find_1" target="check_places" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e_c1_yes" value="YES" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;fontStyle=1;fontColor=#2d7600;" edge="1" source="check_places" target="send_res" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_c1_no" value="NO (Cache Miss)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;fontStyle=1;fontColor=#a80000;" edge="1" source="check_places" target="db_get_dest" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_g1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;" edge="1" source="db_get_dest" target="api_places" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_a1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;" edge="1" source="api_places" target="db_insert" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_i1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;" edge="1" source="db_insert" target="db_find_2" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_f2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;" edge="1" source="db_find_2" target="send_res" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- FLOW 2: Data Models ERD -->
+        <mxCell id="div_text1" value="Data Architecture (ERD)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=2;fontSize=14;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="100" y="140" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dest_model" value="&lt;b&gt;Destination&lt;/b&gt;&lt;hr&gt;- _id (ObjectId)&lt;br&gt;- name (String)&lt;br&gt;- city (String)&lt;br&gt;- country (String)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;verticalAlign=top;spacingTop=5;spacingLeft=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="200" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="place_model" value="&lt;b&gt;Place&lt;/b&gt;&lt;hr&gt;- _id (ObjectId)&lt;br&gt;- destination (Ref: Destination)&lt;br&gt;- name (String)&lt;br&gt;- lat / lon (Number)&lt;br&gt;- images (Array&amp;lt;String&amp;gt;)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;verticalAlign=top;spacingTop=5;spacingLeft=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="100" y="380" width="180" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Connection 1 to N -->
+        <mxCell id="e_erd" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;fontStyle=1;" edge="1" source="dest_model" target="place_model" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="unique_idx" value="&lt;b&gt;Unique Compound Index&lt;/b&gt;&lt;hr&gt;{ destination: 1, name: 1 }&lt;br&gt;(Prevents duplicates)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="100" y="540" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="e_idx" style="edgeStyle=orthogonalEdgeStyle;dashed=1;rounded=1;html=1;strokeColor=#555555;" edge="1" source="unique_idx" target="place_model" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+
+        <!-- Annotations & Legend -->
+        <!-- Legend Box (Bottom-Left) -->
+        <mxCell id="legend_bg" value="&lt;b&gt;LEGEND&lt;/b&gt;" style="swimlane;startSize=24;fillColor=#f5f5f5;strokeColor=#cccccc;html=1;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="80" y="800" width="280" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_process" value="Controller Logic" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="10" y="35" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_ref" value="Database Query/Model" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="140" y="35" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_api" value="External API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="10" y="70" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_solution" value="JSON Output" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="140" y="70" width="120" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Divider Line between flows -->
+        <mxCell id="divider" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="350" y="960" as="sourcePoint" />
+            <mxPoint x="350" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

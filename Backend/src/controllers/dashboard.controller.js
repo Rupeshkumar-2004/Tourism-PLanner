@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import Destination from "../models/destination.model.js";
 import Trip from "../models/trip.model.js";
 import TripDestination from "../models/tripdestination.model.js";
+import Destination from "../models/destination.model.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -17,7 +17,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
  * {
  *   user:            { fullName, email, ProfilePicture },
  *   stats:           { upcomingTrips, destinationsVisited, savedPlaces },
- *   suggestedGuides: [ { _id, name, city, category, coverImage } ],
+ *   suggestedPlaces: [ { _id, name, city, category, coverImage } ],
  *   recentTrips:     [ { _id, title, startDate, endDate, destination, coverImage } ]
  * }
  */
@@ -31,7 +31,7 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
         upcomingTrips,
         destinationsVisited,
         savedPlaces,
-        suggestedGuides,
+        suggestedPlaces,
         recentTrips,
     ] = await Promise.all([
         // 1. User info (password & refreshToken already excluded by auth middleware,
@@ -99,10 +99,10 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
             },
         ]).then((result) => result[0]?.total ?? 0),
 
-        // 5. Suggested guides → user accounts with role 'guide' (limit to 3)
-        User.find({ role: "guide" })
+        // 5. Suggested places (limit to 3)
+        Destination.find()
             .limit(3)
-            .select("fullName email ProfilePicture phone")
+            .select("name city category images")
             .lean(),
 
         // 6. Recent trips → user's latest 5 trips with first destination info
@@ -146,12 +146,12 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
             savedPlaces,
         },
 
-        suggestedGuides: suggestedGuides.map((guide) => ({
-            _id: guide._id,
-            fullName: guide.fullName,
-            email: guide.email,
-            ProfilePicture: guide.ProfilePicture,
-            phone: guide.phone,
+        suggestedPlaces: suggestedPlaces.map((place) => ({
+            _id: place._id,
+            name: place.name,
+            city: place.city,
+            category: place.category,
+            coverImage: place.images?.[0] || "",
         })),
 
         recentTrips: formattedRecentTrips,

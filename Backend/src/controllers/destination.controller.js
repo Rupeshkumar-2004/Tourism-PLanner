@@ -1,17 +1,10 @@
 import mongoose from "mongoose";
+import { z } from "zod";
 import Destination from "../models/destination.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {
-    addNumberRangeFilter,
-    buildPaginationMeta,
-    buildSelect,
-    buildSort,
-    parsePagination,
-    regexFilter,
-    regexInFilter,
-} from "../utils/queryFeatures.js";
+import { addNumberRangeFilter, buildPaginationMeta, buildSelect, buildSort, parsePagination, regexFilter, regexInFilter } from "../utils/queryFeatures.js";
 
 const destinationSortFields = [
     "name",
@@ -67,7 +60,7 @@ const buildDestinationFilters = (query) => {
             ? regexInFilter(query.city)
             : regexFilter(query.city);
     }
-    
+
     if (query.state) {
         filter.state = String(query.state).includes(",")
             ? regexInFilter(query.state)
@@ -106,33 +99,13 @@ const buildDestinationFilters = (query) => {
 };
 
 export const createDestination = asyncHandler(async (req, res) => {
-    const { name, city, state, country, description, estimatedBudget, images, bestTimeToVisit, category, tags } = req.body;
-
-    if ([name, city, state].some(field => typeof field !== "string" || field.trim() === "")) {
-        throw new ApiError(400, "Name, city and state are required");
+    const parsed = createDestinationSchema.safeParse(req.body);
+    
+    if (!parsed.success) {
+        throw new ApiError(400, parsed.error.errors.map(err => err.message).join(", "));
     }
 
-    let budgetNumber = estimatedBudget;
-
-    if (estimatedBudget !== undefined) {
-        budgetNumber = Number(estimatedBudget);
-
-        if (Number.isNaN(budgetNumber) || budgetNumber < 0) {
-            throw new ApiError(400, "Estimated budget cannot be negative");
-        }
-    }
-
-    if (images !== undefined && !Array.isArray(images)) {
-        throw new ApiError(400, "Images must be an array");
-    }
-
-    if (tags !== undefined && !Array.isArray(tags)) {
-        throw new ApiError(400, "Tags must be an array");
-    }
-
-    if (category !== undefined && typeof category !== "string") {
-        throw new ApiError(400, "Category must be a string");
-    }
+    const { name, city, state, country, description, estimatedBudget, images, bestTimeToVisit, category, tags } = parsed.data;
 
     try {
         const destination = await Destination.create({
@@ -141,7 +114,7 @@ export const createDestination = asyncHandler(async (req, res) => {
             state,
             country,
             description,
-            estimatedBudget: budgetNumber,
+            estimatedBudget,
             images,
             bestTimeToVisit,
             category,
@@ -201,14 +174,14 @@ export const getAllDestinations = asyncHandler(async (req, res) => {
     if (destinations.length === 0 && (req.query.search || req.query.city)) {
         const searchQuery = req.query.city || req.query.search;
         console.log(`Cache miss for "${searchQuery}". Fetching from external API...`);
-        
+
         try {
             const { fetchAndFormatDestination } = await import("../services/externalApi.service.js");
             const newDestinationData = await fetchAndFormatDestination(searchQuery);
 
             if (newDestinationData) {
                 console.log(`Found city data for "${searchQuery}". Saving to DB...`);
-                
+
                 try {
                     await Destination.create(newDestinationData);
                 } catch (insertError) {
@@ -271,7 +244,6 @@ export const getDestinationById = asyncHandler(async (req, res) => {
 
 export const updateDestinationById = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { name, city, state, country, description, estimatedBudget, images, bestTimeToVisit, category, tags } = req.body;
 
     if (!mongoose.isValidObjectId(id)) {
         throw new ApiError(400, "Invalid destination id");
@@ -281,43 +253,13 @@ export const updateDestinationById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "At least one field is required to update");
     }
 
-    if (name !== undefined && (typeof name !== "string" || name.trim() === "")) {
-        throw new ApiError(400, "Destination name cannot be empty");
+    const parsed = updateDestinationSchema.safeParse(req.body);
+    
+    if (!parsed.success) {
+        throw new ApiError(400, parsed.error.errors.map(err => err.message).join(", "));
     }
 
-    if (city !== undefined && (typeof city !== "string" || city.trim() === "")) {
-        throw new ApiError(400, "City cannot be empty");
-    }
-
-    if (state !== undefined && (typeof state !== "string" || state.trim() === "")) {
-        throw new ApiError(400, "State cannot be empty");
-    }
-
-    if (country !== undefined && (typeof country !== "string" || country.trim() === "")) {
-        throw new ApiError(400, "Country cannot be empty");
-    }
-
-    if (category !== undefined && typeof category !== "string") {
-        throw new ApiError(400, "Category must be a string");
-    }
-
-    let budgetNumber = estimatedBudget;
-
-    if (estimatedBudget !== undefined) {
-        budgetNumber = Number(estimatedBudget);
-
-        if (Number.isNaN(budgetNumber) || budgetNumber < 0) {
-            throw new ApiError(400, "Estimated budget cannot be negative");
-        }
-    }
-
-    if (images !== undefined && !Array.isArray(images)) {
-        throw new ApiError(400, "Images must be an array");
-    }
-
-    if (tags !== undefined && !Array.isArray(tags)) {
-        throw new ApiError(400, "Tags must be an array");
-    }
+    const { name, city, state, country, description, estimatedBudget, images, bestTimeToVisit, category, tags } = parsed.data;
 
     const destination = await Destination.findById(id);
 
@@ -330,7 +272,7 @@ export const updateDestinationById = asyncHandler(async (req, res) => {
     if (state !== undefined) destination.state = state;
     if (country !== undefined) destination.country = country;
     if (description !== undefined) destination.description = description;
-    if (estimatedBudget !== undefined) destination.estimatedBudget = budgetNumber;
+    if (estimatedBudget !== undefined) destination.estimatedBudget = estimatedBudget;
     if (images !== undefined) destination.images = images;
     if (bestTimeToVisit !== undefined) destination.bestTimeToVisit = bestTimeToVisit;
     if (category !== undefined) destination.category = category;
@@ -394,7 +336,7 @@ export const getDestinationWeather = asyncHandler(async (req, res) => {
     }
 
     const { getWeatherForCity } = await import("../services/externalApi.service.js");
-    
+
     const weatherData = await getWeatherForCity(destination.city);
 
     return res.status(200).json(

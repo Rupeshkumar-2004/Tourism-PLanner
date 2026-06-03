@@ -1,0 +1,72 @@
+<mxfile host="Electron" modified="2026-06-03T19:07:00.000Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="api-integration" name="External-API-Integration">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="600" adaptiveColors="auto" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Main Title -->
+        <mxCell id="title" value="EXTERNAL SERVICES INTEGRATION ARCHITECTURE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=18;fontColor=#1a237e;" vertex="1" parent="1">
+          <mxGeometry x="350" y="10" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Components -->
+        <mxCell id="frontend" value="&lt;b&gt;Frontend Client (React.js)&lt;/b&gt;&lt;br&gt;Requests Data &amp;amp; Renders Dynamic UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="50" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="backend" value="&lt;b&gt;Backend Orchestrator (Node.js)&lt;/b&gt;&lt;br&gt;&lt;i&gt;externalApi.service.js / ai.service.js&lt;/i&gt;&lt;br&gt;Acts as the central API Gateway. It extracts data from one API to feed into another sequentially." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="350" y="240" width="300" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- The 4 External APIs -->
+        <mxCell id="api_geo" value="&lt;b&gt;Geoapify API&lt;/b&gt;&lt;br&gt;Provides coordinates, tourist places, and static maps." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="440" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_meteo" value="&lt;b&gt;Open-Meteo API&lt;/b&gt;&lt;br&gt;Provides real-time weather and forecast data." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="270" y="440" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_ai" value="&lt;b&gt;Google Gemini API&lt;/b&gt;&lt;br&gt;Receives raw place data &amp;amp; returns curated JSON itineraries." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="500" y="440" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_pexels" value="&lt;b&gt;Pexels API&lt;/b&gt;&lt;br&gt;Receives AI-generated queries to fetch HD landscape photos." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="730" y="440" width="180" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Edges (Frontend <-> Backend) -->
+        <mxCell id="e_req" value="1. Request /spontaneous" style="edgeStyle=none;html=1;strokeColor=#555555;strokeWidth=2;exitX=0.25;exitY=1;entryX=0.25;entryY=0;startArrow=none;endArrow=classic;" edge="1" source="frontend" target="backend" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_res" value="6. Aggregated JSON payload" style="edgeStyle=none;html=1;strokeColor=#82b366;strokeWidth=3;exitX=0.75;exitY=0;entryX=0.75;entryY=1;startArrow=none;endArrow=classic;fontStyle=1;fontColor=#2d7014;" edge="1" source="backend" target="frontend" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Edges (Backend <-> APIs) -->
+        <mxCell id="e_api1" value="2. Fetch POIs &amp;amp; Maps" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;startArrow=classic;endArrow=classic;dashed=1;exitX=0.16;exitY=1;entryX=0.5;entryY=0;" edge="1" source="backend" target="api_geo" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_api2" value="3. Fetch Weather" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;startArrow=classic;endArrow=classic;dashed=1;exitX=0.38;exitY=1;entryX=0.5;entryY=0;" edge="1" source="backend" target="api_meteo" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_api3" value="4. AI: Parse POIs to Itinerary" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;startArrow=classic;endArrow=classic;dashed=1;exitX=0.62;exitY=1;entryX=0.5;entryY=0;" edge="1" source="backend" target="api_ai" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_api4" value="5. Pexels: AI Query to Image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeColor=#555555;startArrow=classic;endArrow=classic;dashed=1;exitX=0.84;exitY=1;entryX=0.5;entryY=0;" edge="1" source="backend" target="api_pexels" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Note Box -->
+        <mxCell id="note1" value="&lt;b&gt;DATA FLOW DEPENDENCY CHAIN (IMPORTANT)&lt;/b&gt;&lt;br&gt;&lt;br&gt;External APIs &lt;b&gt;DO NOT&lt;/b&gt; talk to each other directly.&lt;br&gt;The Backend Node.js server acts as the Orchestrator:&lt;br&gt;&lt;br&gt;1. Backend fetches Places from &lt;b&gt;Geoapify&lt;/b&gt;.&lt;br&gt;2. Backend passes those Places directly into the prompt for &lt;b&gt;Gemini AI&lt;/b&gt;.&lt;br&gt;3. Backend receives JSON from Gemini containing an 'imageQuery'.&lt;br&gt;4. Backend passes that query to &lt;b&gt;Pexels&lt;/b&gt; to fetch HD photos.&lt;br&gt;5. Backend bundles everything and sends it to the &lt;b&gt;Frontend&lt;/b&gt;." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;spacingRight=10;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="30" y="30" width="310" height="170" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { z } from "zod";
 import Destination from "../models/destination.model.js";
 import Trip from "../models/trip.model.js";
 import TripDestination from "../models/tripdestination.model.js";
@@ -39,18 +40,65 @@ const buildTripDestinationFilters = (query, tripId) => {
    return filter;
 };
 
+const itinerarySchema = z.array(z.object({
+   dayNumber: z.number().int().min(1),
+   activities: z.array(z.any()).optional()
+}));
+
+const addDestinationSchema = z.object({
+   destinationId: z.string().refine(val => mongoose.isValidObjectId(val), 'Invalid destination id'),
+   arrivalDate: z.coerce.date().optional(),
+   departureDate: z.coerce.date().optional(),
+   estimatedBudget: z.coerce.number().min(0, "Estimated budget cannot be negative").optional(),
+   notes: z.string().optional(),
+   order: z.coerce.number().int().min(1, "Order must be a whole number greater than 0").optional(),
+   itinerary: itinerarySchema.optional(),
+   essentialGear: z.array(z.string()).optional()
+}).refine(data => {
+   if (data.arrivalDate && data.departureDate) {
+      return data.departureDate >= data.arrivalDate;
+   }
+   return true;
+}, {
+   message: 'Departure date must be after or equal to arrival date',
+   path: ['departureDate']
+});
+
+const updateDestinationSchema = z.object({
+   arrivalDate: z.coerce.date().optional(),
+   departureDate: z.coerce.date().optional(),
+   estimatedBudget: z.coerce.number().min(0, "Estimated budget cannot be negative").optional(),
+   notes: z.string().optional(),
+   order: z.coerce.number().int().min(1, "Order must be a whole number greater than 0").optional(),
+   itinerary: itinerarySchema.optional(),
+   essentialGear: z.array(z.string()).optional()
+});
+
+const addPlaceSchema = z.object({
+   tripId: z.string().refine(val => mongoose.isValidObjectId(val), 'Invalid trip id'),
+   destinationId: z.string().refine(val => mongoose.isValidObjectId(val), 'Invalid destination id'),
+   place: z.object({
+      name: z.string().min(1, "Valid place object with a name is required"),
+      description: z.string().optional(),
+      category: z.string().optional(),
+      images: z.array(z.string()).optional(),
+      address: z.string().optional()
+   })
+});
+
 export const addDestinationToTrip = asyncHandler(async (req, res) => {
-
    const tripId = req.params.tripId;
-   const { destinationId, arrivalDate, departureDate, estimatedBudget, notes, order, itinerary, essentialGear } = req.body;
 
-   if(!mongoose.isValidObjectId(tripId)){
+   if (!mongoose.isValidObjectId(tripId)) {
       throw new ApiError(400, "Invalid trip id");
    }
 
-   if(!mongoose.isValidObjectId(destinationId)){
-      throw new ApiError(400, "Invalid destination id");
+   const parsed = addDestinationSchema.safeParse(req.body);
+   if (!parsed.success) {
+      throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
    }
+
+   const { destinationId, arrivalDate, departureDate, estimatedBudget, notes, order, itinerary, essentialGear } = parsed.data;
 
    const trip = await Trip.findOne({
       _id: tripId,
@@ -63,40 +111,8 @@ export const addDestinationToTrip = asyncHandler(async (req, res) => {
 
    const destination = await Destination.findById(destinationId);
 
-   if(!destination){
+   if (!destination) {
       throw new ApiError(404, "Destination not found");
-   }
-
-   if( arrivalDate && departureDate && new Date(departureDate) < new Date(arrivalDate)){
-      throw new ApiError(400, "Departure date must be after or equal to arrival date");
-   }
-
-   if (arrivalDate && Number.isNaN(new Date(arrivalDate).getTime())) {
-      throw new ApiError(400, "Invalid arrival date");
-   }
-
-   if (departureDate && Number.isNaN(new Date(departureDate).getTime())) {
-      throw new ApiError(400, "Invalid departure date");
-   }
-
-   let budgetNumber = estimatedBudget;
-
-   if(estimatedBudget !== undefined){
-      budgetNumber = Number(estimatedBudget);
-
-      if(Number.isNaN(budgetNumber) || budgetNumber < 0){
-         throw new ApiError(400, "Estimated budget cannot be negative");
-      }
-   }
-
-   let destinationOrder = order;
-
-   if(destinationOrder !== undefined){ 
-      destinationOrder = Number(destinationOrder);
-
-      if(!Number.isInteger(destinationOrder) || destinationOrder < 1){
-         throw new ApiError(400, "Order must be a whole number greater than 0");
-      }
    }
 
    try {
@@ -105,9 +121,9 @@ export const addDestinationToTrip = asyncHandler(async (req, res) => {
          destination: destination._id,
          arrivalDate,
          departureDate,
-         estimatedBudget: budgetNumber,
+         estimatedBudget,
          notes,
-         order: destinationOrder,
+         order,
          itinerary: itinerary || [],
          essentialGear: essentialGear || []
       });
@@ -192,17 +208,7 @@ export const getTripDestinations = asyncHandler(async (req, res) => {
 });
 
 export const updateTripDestinationById = asyncHandler(async (req, res) => {
-
    const { id } = req.params;
-   const {
-      arrivalDate,
-      departureDate,
-      estimatedBudget,
-      notes,
-      order,
-      itinerary,
-      essentialGear
-   } = req.body;
 
    if (!mongoose.isValidObjectId(id)) {
       throw new ApiError(400, "Invalid trip destination id");
@@ -211,6 +217,13 @@ export const updateTripDestinationById = asyncHandler(async (req, res) => {
    if (Object.keys(req.body).length === 0) {
       throw new ApiError(400, "At least one field is required to update");
    }
+
+   const parsed = updateDestinationSchema.safeParse(req.body);
+   if (!parsed.success) {
+      throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
+   }
+
+   const { arrivalDate, departureDate, estimatedBudget, notes, order, itinerary, essentialGear } = parsed.data;
 
    const tripDestination = await TripDestination.findById(id);
 
@@ -230,51 +243,14 @@ export const updateTripDestinationById = asyncHandler(async (req, res) => {
    const nextArrivalDate = arrivalDate !== undefined ? arrivalDate : tripDestination.arrivalDate;
    const nextDepartureDate = departureDate !== undefined ? departureDate : tripDestination.departureDate;
 
-   if (
-      nextArrivalDate &&
-      Number.isNaN(new Date(nextArrivalDate).getTime())
-   ) {
-      throw new ApiError(400, "Invalid arrival date");
-   }
-
-   if (
-      nextDepartureDate &&
-      Number.isNaN(new Date(nextDepartureDate).getTime())
-   ) {
-      throw new ApiError(400, "Invalid departure date");
-   }
-
-   if (
-      nextArrivalDate &&
-      nextDepartureDate &&
-      new Date(nextDepartureDate) < new Date(nextArrivalDate)
-   ) {
+   if (nextArrivalDate && nextDepartureDate && nextDepartureDate < nextArrivalDate) {
       throw new ApiError(400, "Departure date must be after or equal to arrival date");
    }
 
-   let budgetNumber = estimatedBudget;
-
-   if (estimatedBudget !== undefined) {
-      budgetNumber = Number(estimatedBudget);
-
-      if (Number.isNaN(budgetNumber) || budgetNumber < 0) {
-         throw new ApiError(400, "Estimated budget cannot be negative");
-      }
-   }
-
-   if (order !== undefined) {
-      const destinationOrder = Number(order);
-
-      if (!Number.isInteger(destinationOrder) || destinationOrder < 1) {
-         throw new ApiError(400, "Order must be a whole number greater than 0");
-      }
-
-      tripDestination.order = destinationOrder;
-   }
-
+   if (order !== undefined) tripDestination.order = order;
    if (arrivalDate !== undefined) tripDestination.arrivalDate = arrivalDate;
    if (departureDate !== undefined) tripDestination.departureDate = departureDate;
-   if (estimatedBudget !== undefined) tripDestination.estimatedBudget = budgetNumber;
+   if (estimatedBudget !== undefined) tripDestination.estimatedBudget = estimatedBudget;
    if (notes !== undefined) tripDestination.notes = notes;
    if (itinerary !== undefined) tripDestination.itinerary = itinerary;
    if (essentialGear !== undefined) tripDestination.essentialGear = essentialGear;
@@ -333,15 +309,13 @@ export const deleteTripDestinationById = asyncHandler(async (req, res) => {
 });
 
 export const addPlaceToItinerary = asyncHandler(async (req, res) => {
-   const { tripId, destinationId, place } = req.body;
-
-   if (!mongoose.isValidObjectId(tripId) || !mongoose.isValidObjectId(destinationId)) {
-      throw new ApiError(400, "Invalid trip or destination ID");
+   const parsed = addPlaceSchema.safeParse(req.body);
+   
+   if (!parsed.success) {
+      throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
    }
 
-   if (!place || !place.name) {
-      throw new ApiError(400, "Valid place object is required");
-   }
+   const { tripId, destinationId, place } = parsed.data;
 
    // Ensure the trip exists and belongs to the user
    const trip = await Trip.findOne({ _id: tripId, createdBy: req.user._id });

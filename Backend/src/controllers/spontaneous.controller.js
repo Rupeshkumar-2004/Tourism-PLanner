@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -10,12 +11,18 @@ import {
 } from "../services/externalApi.service.js";
 import { generateSpontaneousItineraries } from "../services/ai.service.js";
 
-export const getSpontaneousAdventures = asyncHandler(async (req, res) => {
-    const { lat, lon } = req.query;
+const spontaneousQuerySchema = z.object({
+    lat: z.coerce.number({ invalid_type_error: "Latitude must be a valid number" }),
+    lon: z.coerce.number({ invalid_type_error: "Longitude must be a valid number" })
+});
 
-    if (!lat || !lon) {
-        throw new ApiError(400, "Latitude and longitude are required");
+export const getSpontaneousAdventures = asyncHandler(async (req, res) => {
+    const parsed = spontaneousQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+        throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
     }
+    
+    const { lat, lon } = parsed.data;
 
     // 1. Get Location Name from Coordinates
     const locationData = await getCityFromCoordinates(lat, lon);
@@ -83,8 +90,8 @@ export const getSpontaneousAdventures = asyncHandler(async (req, res) => {
             location: {
                 city,
                 state,
-                lat: parseFloat(lat),
-                lon: parseFloat(lon),
+                lat,
+                lon,
                 formatted: locationData?.formatted || city
             },
             weather,

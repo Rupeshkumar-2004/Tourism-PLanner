@@ -6,12 +6,11 @@ function useDestinations() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
-    const [category, setCategory] = useState('All');
     const [state, setState] = useState(''); // Added state for State filter
 
     const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ['destinations', { page, limit, search, category, state }],
-        queryFn: () => getDestinations({ page, limit, search, category, state }),
+        queryKey: ['destinations', { page, limit, search, state }],
+        queryFn: () => getDestinations({ page, limit, search, state }),
         placeholderData: keepPreviousData // keep old data while fetching new page
     });
 
@@ -27,8 +26,6 @@ function useDestinations() {
         setLimit,
         search,
         setSearch,
-        category,
-        setCategory,
         state,
         setState
     };

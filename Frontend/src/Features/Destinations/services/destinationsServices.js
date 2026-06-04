@@ -1,14 +1,10 @@
 import api from "../../../services/api";
 
-const getDestinations = async ({ page = 1, limit = 10, search = '', category = '', state = '' } = {}) => {
+const getDestinations = async ({ page = 1, limit = 10, search = '', state = '' } = {}) => {
     const params = { page, limit };
 
     if (search) {
         params.search = search;
-    }
-
-    if (category && category !== 'All') {
-        params.category = category;
     }
 
     if (state) {

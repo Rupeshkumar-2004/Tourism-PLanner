@@ -1,28 +1,15 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import DestinationCard from "./DestinationsCard.jsx";
 import DestinationEmpty from "./DestinationsEmpty.jsx";
 
 import { Search, ChevronLeft, ChevronRight, X } from "lucide-react";
 
-const standardFilters = [
-  'All',
-  'Historical',
-  'Beach',
-  'Adventure',
-  'Nature',
-  'Solo',
-  'Group',
-  'Coastal',
-  'Mountains',
-  'Heritage',
-];
 
-const DestinationContent = ({ destinations = [], pagination, setPage, page, search, setSearch, category, setCategory, isLoading }) => {
-  const filterScrollRef = React.useRef(null);
+const DestinationContent = ({ destinations = [], pagination, setPage, page, search, setSearch, isLoading }) => {
 
-  const [localSearch, setLocalSearch] = React.useState(search || '');
+  const [localSearch, setLocalSearch] = useState(search || '');
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLocalSearch(search || '');
   }, [search]);
 
@@ -36,8 +23,6 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
     }
   };
 
-  const filters = standardFilters.filter(f => f !== 'All' && f !== 'Historical');
-
   const handleSearchChange = (e) => {
     e.preventDefault();
     setLocalSearch(e.target.value);
@@ -47,24 +32,8 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
     e.preventDefault();
     setLocalSearch('');
     if (search !== '') {
-        setSearch('');
-        setPage(1);
-    }
-  };
-
-  const handleCategoryChange = (e, filter) => {
-    e.preventDefault();
-    setCategory(filter);
-    setPage(1);
-  };
-
-  const scrollFilters = (direction) => {
-    if (filterScrollRef.current) {
-      const scrollAmount = 300;
-      filterScrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth',
-      });
+      setSearch('');
+      setPage(1);
     }
   };
 
@@ -154,54 +123,6 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
               </button>
             )}
           </div>
-
-          {/* Filter Carousel */}
-          <div className="w-full max-w-4xl relative group">
-            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-surface to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-surface to-transparent z-10 pointer-events-none" />
-
-            <button
-              onClick={() => scrollFilters('left')}
-              className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 p-2 bg-surface-container-lowest shadow-md rounded-full border border-outline-variant/50 text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
-            >
-              <ChevronLeft size={20} />
-            </button>
-
-            {/* Filter Buttons Container */}
-            <div
-              ref={filterScrollRef}
-              className="flex items-center gap-3 overflow-x-hidden scroll-smooth py-2 px-4"
-            >
-              <button
-                onClick={() => handleCategoryChange('')}
-                className={`whitespace-nowrap px-6 py-2.5 rounded-full font-label-md transition-all duration-300 flex-shrink-0 ${!category || category === 'All'
-                  ? 'bg-primary text-white shadow-md scale-105'
-                  : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-variant'
-                  }`}
-              >
-                All
-              </button>
-              {filters.map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => handleCategoryChange(filter)}
-                  className={`whitespace-nowrap px-6 py-2.5 rounded-full font-label-md transition-all duration-300 flex-shrink-0 ${filter === category
-                    ? 'bg-primary text-white shadow-md scale-105'
-                    : 'bg-surface-container-lowest border border-outline-variant text-on-surface-variant hover:bg-surface-variant'
-                    }`}
-                >
-                  {filter}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => scrollFilters('right')}
-              className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 p-2 bg-surface-container-lowest shadow-md rounded-full border border-outline-variant/50 text-on-surface-variant hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
         </section>
 
         {/* Destination Grid */}
@@ -212,7 +133,7 @@ const DestinationContent = ({ destinations = [], pagination, setPage, page, sear
             </div>
           ) : destinations.length === 0 && isLoading ? (
             <div className="col-span-full flex justify-center py-12">
-               <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : (
             destinations.map((destination) => (

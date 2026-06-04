@@ -261,11 +261,17 @@ const DestinationContent = ({ destination }) => {
             for later.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <button className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-2">
+            <button 
+              onClick={() => navigate('/trips')}
+              className="w-full sm:w-auto px-8 py-4 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-2"
+            >
               <PlaneTakeoff className="w-5 h-5" />
               Plan My Journey
             </button>
-            <button className="w-full sm:w-auto px-8 py-4 border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors flex items-center justify-center gap-2">
+            <button 
+              onClick={() => navigate('/trips')}
+              className="w-full sm:w-auto px-8 py-4 border border-outline text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors flex items-center justify-center gap-2"
+            >
               <Heart className="w-5 h-5" />
               Save to My Trips
             </button>

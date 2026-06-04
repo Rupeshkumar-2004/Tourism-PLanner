@@ -1,7 +1,12 @@
-import {Compass, Plane, Globe, Navigation, MapPin, Sparkles } from 'lucide-react';
+import { Compass, Plane, Globe, Navigation, MapPin, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import TopNavBar from '../../../components/TopNavBar.jsx';
+import { useAuth } from '../../../hooks/useAuth.js';
 
 const EmptyDashboard = () => {
+  const { user } = useAuth();
+
+  const navigate = useNavigate();
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 text-gray-900">
 
@@ -11,11 +16,11 @@ const EmptyDashboard = () => {
 
         {/* ================= MAIN SCROLL AREA ================= */}
         <main className="flex-1 overflow-y-auto px-6 md:px-12 py-8">
-          
+
           {/* Welcome Section */}
           <section className="mb-16">
             <h2 className="text-4xl font-bold mb-2">
-              Welcome back, Rupesh.
+              Welcome back, {user?.fullName || 'User'}!
             </h2>
 
             <p className="text-lg text-gray-500">
@@ -25,7 +30,7 @@ const EmptyDashboard = () => {
 
           {/* ================= STATS SECTION ================= */}
           <section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-            
+
             {/* Upcoming Trips */}
             <div className="bg-white p-6 rounded-xl shadow-sm border">
               <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mb-4">
@@ -81,10 +86,10 @@ const EmptyDashboard = () => {
 
           {/* ================= EMPTY STATE SECTION ================= */}
           <section className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed">
-            
+
             {/* Illustration */}
             <div className="relative w-48 h-48 flex items-center justify-center mb-8">
-              
+
               {/* Background Circles */}
               <div className="absolute inset-0 bg-amber-100 rounded-full blur-2xl"></div>
 
@@ -108,7 +113,10 @@ const EmptyDashboard = () => {
             </p>
 
             {/* CTA Button */}
-            <button className="px-8 py-3 rounded-lg bg-amber-700 text-white hover:bg-amber-800 flex items-center gap-2 font-medium transition-colors">
+            <button
+              onClick={() => navigate('/destinations')}
+              className="px-8 py-3 rounded-lg bg-amber-700 text-white hover:bg-amber-800 flex items-center gap-2 font-medium transition-colors"
+            >
               <Sparkles size={18} />
               Explore Destinations
             </button>

@@ -30,16 +30,21 @@ export const generatePlaceDescriptions = async (cityName, placeNames) => {
         if (response.text) {
             try {
                 // Parse the JSON string returned by Gemini
-                return JSON.parse(response.text);
+                const parsed = JSON.parse(response.text);
+                console.log(`[Gemini API] Successfully generated descriptions for ${placeNames.length} places in ${cityName}`);
+                return parsed;
             } catch (parseError) {
-                console.error("Failed to parse Gemini response as JSON:", response.text);
+                console.error("[Gemini API] Failed to parse Gemini response as JSON:", response.text);
                 return {};
             }
         }
 
         return {};
     } catch (error) {
-        console.error("Error communicating with Gemini API:", error);
+        console.error("[Gemini API] Error communicating with Gemini API:", error.message || error);
+        if (error.status === 429 || (error.message && error.message.includes("429"))) {
+            console.error("[Gemini API] Rate limit exceeded!");
+        }
         return {};
     }
 };
@@ -63,12 +68,16 @@ export const generateDestinationDescription = async (cityName, stateName, countr
         });
 
         if (response.text) {
+            console.log(`[Gemini API] Successfully generated description for ${cityName}`);
             return response.text.trim();
         }
 
         return `A beautiful travel destination located in ${stateName || ""}, ${countryName || ""}. Explore local attractions, culture, and nature.`;
     } catch (error) {
-        console.error("Error generating destination description:", error);
+        console.error("[Gemini API] Error generating destination description:", error.message || error);
+        if (error.status === 429 || (error.message && error.message.includes("429"))) {
+            console.error("[Gemini API] Rate limit exceeded!");
+        }
         return `A beautiful travel destination located in ${stateName || ""}, ${countryName || ""}. Explore local attractions, culture, and nature.`;
     }
 };
@@ -138,14 +147,19 @@ export const generateSpontaneousItineraries = async (places, city) => {
 
         if (response.text) {
             try {
-                return JSON.parse(response.text.trim());
+                const parsed = JSON.parse(response.text.trim());
+                console.log(`[Gemini API] Successfully generated spontaneous itineraries for ${city}`);
+                return parsed;
             } catch (e) {
-                console.error("Failed to parse Gemini response:", response.text);
+                console.error("[Gemini API] Failed to parse Gemini response:", response.text);
             }
         }
         return { suggestions: [], paths: [] };
     } catch (error) {
-        console.error("Error generating spontaneous itineraries:", error);
+        console.error("[Gemini API] Error generating spontaneous itineraries:", error.message || error);
+        if (error.status === 429 || (error.message && error.message.includes("429"))) {
+            console.error("[Gemini API] Rate limit exceeded!");
+        }
         return { suggestions: [], paths: [] };
     }
 };

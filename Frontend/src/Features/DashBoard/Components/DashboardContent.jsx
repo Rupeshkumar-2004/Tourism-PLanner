@@ -13,7 +13,7 @@ const DashboardContent = ({ dashboardData }) => {
   const recentTrips = Array.isArray(dashboardData?.recentTrips)
     ? dashboardData.recentTrips
     : [];
-  const suggestedGuides = dashboardData?.suggestedGuides || [];
+  const suggestedPlaces = dashboardData?.suggestedPlaces || [];
 
   return (
     <div className="bg-surface text-on-surface font-body-md min-h-screen pb-section-gap">
@@ -34,7 +34,7 @@ const DashboardContent = ({ dashboardData }) => {
         {/* Stats Row */}
         <StatsSection
           stats={dashboardData?.stats}
-          guideCount={Array.isArray(suggestedGuides) ? suggestedGuides.length : 0}
+          guideCount={Array.isArray(suggestedPlaces) ? suggestedPlaces.length : 0}
         />
 
         {/* Upcoming Trips Section */}
@@ -47,7 +47,7 @@ const DashboardContent = ({ dashboardData }) => {
           <RecentTripsSection trips={recentTrips} />
         )}
 
-        <SuggestionGuideSection guides={suggestedGuides} />
+        <SuggestionGuideSection guides={suggestedPlaces} />
       </main>
     </div>
   );

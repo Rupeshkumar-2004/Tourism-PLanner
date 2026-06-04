@@ -1,0 +1,126 @@
+<mxfile host="Electron" modified="2026-06-04T12:00:00.000Z" agent="Antigravity" version="21.0.0" type="device">
+  <diagram id="spontaneous-flow" name="Spontaneous Feature Flow">
+    <mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" adaptiveColors="auto" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Header Title -->
+        <mxCell id="title" value="SPONTANEOUS FEATURE: LOGICAL FLOW" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=18;fontColor=#1a237e;" vertex="1" parent="1">
+          <mxGeometry x="327" y="30" width="1000" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Nodes -->
+        <mxCell id="n_start" value="User Input&lt;br&gt;(Location/Query)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="550" y="125" width="100" height="70" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_fork" value="Backend API&lt;br&gt;(Forks Requests)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="530" y="260" width="140" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_map" value="Map Tile Provider&lt;br&gt;(Phase 2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="420" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_weather" value="Weather API&lt;br&gt;(Phase 2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="520" y="420" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_poi" value="POI Database&lt;br&gt;(Phase 2)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="960" y="420" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_ui1" value="UI: Partial Output&lt;br&gt;(Renders Map &amp;amp; Widget)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="570" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_ai" value="AI Orchestrator&lt;br&gt;(Filters POIs by Weather)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="570" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_llm" value="LLM Processing&lt;br&gt;(Generates Vibe &amp;amp; Itinerary)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="720" width="160" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="n_end" value="Final UI:&lt;br&gt;Progressive Reveal" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="550" y="875" width="100" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" value="HTTP Req" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_start" target="n_fork">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e2" value="Coords" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_fork" target="n_map">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e3" value="Location" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_fork" target="n_weather">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e4" value="Query" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_fork" target="n_poi">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e5" value="Map Tiles" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_map" target="n_ui1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e6" value="Condition" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_weather" target="n_ui1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e7" value="Weather Context" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_weather" target="n_ai">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e8" value="Raw Places" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_poi" target="n_ai">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e9" value="Context" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_ai" target="n_llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e10" value="Text &amp;amp; Markers" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;" edge="1" parent="1" source="n_llm" target="n_end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="e11" value="UI Update" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=12;strokeColor=#555555;dashed=1;" edge="1" parent="1" source="n_ui1" target="n_end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Legend Box (Bottom-Left) -->
+        <mxCell id="legend_bg" value="&lt;b&gt;LEGEND&lt;/b&gt;" style="swimlane;startSize=24;fillColor=#f5f5f5;strokeColor=#cccccc;html=1;fontSize=11;align=center;" vertex="1" parent="1">
+          <mxGeometry x="50" y="800" width="280" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_process" value="Process / Flow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="10" y="35" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_problem" value="Problems" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="140" y="35" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_impact" value="Impact" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="10" y="70" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_solution" value="UI / Outcomes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="140" y="70" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_ref" value="Reference / Docs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="10" y="105" width="120" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_decision" value="Decision / Fork" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="legend_bg">
+          <mxGeometry x="140" y="105" width="120" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- Scope Box (Below Legend) -->
+        <mxCell id="scope_box" value="&lt;b&gt;Scope:&lt;/b&gt; Tourism Planner - Spontaneous Feature Flow&lt;br&gt;&lt;b&gt;Author:&lt;/b&gt; Antigravity Agent&lt;br&gt;&lt;b&gt;Date:&lt;/b&gt; 2026-06-04" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#cccccc;align=left;spacingLeft=10;fontSize=11;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="1040" width="280" height="70" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -15,13 +15,17 @@ export const getPexelsImageForPlace = async (searchQuery, limit = 5) => {
         const response = await fetch(url, {
             headers: {
                 Authorization: PEXELS_API_KEY
-            }
+            },
+            signal: AbortSignal.timeout(8000)
         });
 
         if (!response.ok) {
-            console.error("Pexels API Error:", await response.text());
+            console.error(`[Pexels API] Error ${response.status} ${response.statusText} for query "${searchQuery}"`);
+            if (response.status === 429) console.error("[Pexels API] Rate limit exceeded!");
             return [];
         }
+
+        console.log(`[Pexels API] Successfully fetched images for "${searchQuery}"`);
 
         const data = await response.json();
         // Return an array of landscape image URLs
@@ -43,11 +47,15 @@ export const getCoordinatesForCity = async (cityName) => {
 
     try {
         const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(cityName)}&type=city&format=json&apiKey=${GEOAPIFY_API_KEY}`;
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
 
         if (!response.ok) {
+            console.error(`[Geoapify Geocoding API] Error ${response.status} ${response.statusText} for city "${cityName}"`);
+            if (response.status === 429) console.error("[Geoapify Geocoding API] Rate limit exceeded!");
             throw new Error(`Geoapify Geocoding API failed: ${response.statusText}`);
         }
+        
+        console.log(`[Geoapify Geocoding API] Successfully fetched coords for "${cityName}"`);
 
         const data = await response.json();
 
@@ -82,11 +90,15 @@ export const getCityFromCoordinates = async (lat, lon) => {
 
     try {
         const url = `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${GEOAPIFY_API_KEY}`;
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
 
         if (!response.ok) {
+            console.error(`[Geoapify Reverse Geocoding API] Error ${response.status} ${response.statusText} for coords ${lat},${lon}`);
+            if (response.status === 429) console.error("[Geoapify Reverse Geocoding API] Rate limit exceeded!");
             throw new Error(`Geoapify Reverse Geocoding API failed: ${response.statusText}`);
         }
+        
+        console.log(`[Geoapify Reverse Geocoding API] Successfully reversed coords ${lat},${lon}`);
 
         const data = await response.json();
 
@@ -116,11 +128,15 @@ export const getWeatherForCoordinates = async (lat, lon) => {
     try {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=3`;
 
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
 
         if (!response.ok) {
+            console.error(`[Open-Meteo API] Error ${response.status} ${response.statusText} for coords ${lat},${lon}`);
+            if (response.status === 429) console.error("[Open-Meteo API] Rate limit exceeded!");
             throw new Error(`Open-Meteo API failed: ${response.statusText}`);
         }
+        
+        console.log(`[Open-Meteo API] Successfully fetched weather for coords ${lat},${lon}`);
 
         const data = await response.json();
         return data;
@@ -142,11 +158,15 @@ export const getWeatherForCity = async (cityName) => {
 
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=3`;
 
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
 
         if (!response.ok) {
+            console.error(`[Open-Meteo API] Error ${response.status} ${response.statusText} for city "${cityName}"`);
+            if (response.status === 429) console.error("[Open-Meteo API] Rate limit exceeded!");
             throw new Error(`Open-Meteo API failed: ${response.statusText}`);
         }
+
+        console.log(`[Open-Meteo API] Successfully fetched weather for city "${cityName}"`);
 
         const data = await response.json();
         return data;
@@ -173,8 +193,12 @@ export const getTouristPlacesByCoords = async (lat, lon, limit = 10) => {
         const response = await fetch(url);
 
         if (!response.ok) {
+            console.error(`[Geoapify Places API] Error ${response.status} ${response.statusText} for coords ${lat},${lon}`);
+            if (response.status === 429) console.error("[Geoapify Places API] Rate limit exceeded!");
             throw new Error(`Geoapify Places API failed: ${response.statusText}`);
         }
+
+        console.log(`[Geoapify Places API] Successfully fetched places for coords ${lat},${lon}`);
 
         const data = await response.json();
 

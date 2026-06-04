@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { z } from "zod";
+import { createDestinationSchema, updateDestinationSchema } from "../schemas/destination.schema.js";
 import Destination from "../models/destination.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -30,6 +30,8 @@ const destinationSelectFields = [
     "createdAt",
     "updatedAt",
 ];
+
+
 
 // Converts req.query into a safe MongoDB filter object for Destination APIs.
 // Important principle:
@@ -100,7 +102,7 @@ const buildDestinationFilters = (query) => {
 
 export const createDestination = asyncHandler(async (req, res) => {
     const parsed = createDestinationSchema.safeParse(req.body);
-    
+
     if (!parsed.success) {
         throw new ApiError(400, parsed.error.errors.map(err => err.message).join(", "));
     }
@@ -169,6 +171,7 @@ export const getAllDestinations = asyncHandler(async (req, res) => {
         .skip(skip)
         .limit(limit);
 
+
     // READ-THROUGH CACHE LOGIC
     // If no destinations found, AND the user explicitly searched for something (city or general search)
     if (destinations.length === 0 && (req.query.search || req.query.city)) {
@@ -184,7 +187,8 @@ export const getAllDestinations = asyncHandler(async (req, res) => {
 
                 try {
                     await Destination.create(newDestinationData);
-                } catch (insertError) {
+                }
+                catch (insertError) {
                     if (insertError.code !== 11000) { // Ignore duplicate key errors silently
                         console.error("DB Insert Error during cache fill:", insertError);
                     }
@@ -254,7 +258,7 @@ export const updateDestinationById = asyncHandler(async (req, res) => {
     }
 
     const parsed = updateDestinationSchema.safeParse(req.body);
-    
+
     if (!parsed.success) {
         throw new ApiError(400, parsed.error.errors.map(err => err.message).join(", "));
     }

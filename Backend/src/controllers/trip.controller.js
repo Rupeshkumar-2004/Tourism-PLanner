@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { z } from 'zod';
+import { createTripSchema, updateTripSchema } from '../schemas/trip.schema.js';
 import Trip from '../models/trip.model.js';
 import TripDestination from '../models/tripdestination.model.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -72,31 +72,11 @@ const buildTripFilters = (query, userId) => {
    return filter;
 };
 
-const createTripSchema = z.object({
-   title: z.string().trim().min(1, 'Title is required'),
-   description: z.string().optional(),
-   category: z.string().optional(),
-   startDate: z.coerce.date(),
-   endDate: z.coerce.date(),
-   totalBudget: z.coerce.number().min(0, 'Total budget cannot be negative')
-}).refine(data => data.endDate >= data.startDate, {
-   message: 'End date must be after or equal to start date',
-   path: ['endDate']
-});
 
-const updateTripSchema = z.object({
-   title: z.string().trim().min(1, 'Title cannot be empty').optional(),
-   description: z.string().optional(),
-   category: z.string().optional(),
-   bannerImage: z.string().url().optional(),
-   startDate: z.coerce.date().optional(),
-   endDate: z.coerce.date().optional(),
-   totalBudget: z.coerce.number().min(0, 'Total budget cannot be negative').optional()
-});
 
 export const createTrip = asyncHandler(async (req, res) => {
    const parsed = createTripSchema.safeParse(req.body);
-   
+
    if (!parsed.success) {
       throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
    }
@@ -241,7 +221,7 @@ export const updateTripById = asyncHandler(async (req, res) => {
    }
 
    const { title, description, startDate, endDate, totalBudget, category, bannerImage } = parsed.data;
-   
+
    const trip = await Trip.findOne({
       _id: tripId,
       createdBy: req.user._id
@@ -298,21 +278,21 @@ export const deleteTripById = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Invalid trip id");
    }
 
-   const trip = await Trip.findOneAndDelete({ 
-                              _id: tripId,
-                              createdBy: req.user._id 
-                           });
-   if(!trip){
+   const trip = await Trip.findOneAndDelete({
+      _id: tripId,
+      createdBy: req.user._id
+   });
+   if (!trip) {
       throw new ApiError(404, "Trip not found");
    }
 
    await TripDestination.deleteMany({ trip: tripId });
 
    return res.status(200)
-             .json(
-               new ApiResponse(
-                  200,
-                  {},
-                  "Deleted Successfully"
-               ));
+      .json(
+         new ApiResponse(
+            200,
+            {},
+            "Deleted Successfully"
+         ));
 });

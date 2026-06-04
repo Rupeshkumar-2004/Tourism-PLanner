@@ -1,32 +1,23 @@
-import { z } from "zod";
+import { spontaneousQuerySchema } from "../schemas/spontaneous.schema.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import {
-    getCityFromCoordinates,
-    getTouristPlacesByCoords,
-    getWeatherForCoordinates,
-    getStaticMapUrl,
-    getPexelsImageForPlace
-} from "../services/externalApi.service.js";
+import { getCityFromCoordinates, getTouristPlacesByCoords, getWeatherForCoordinates, getStaticMapUrl, getPexelsImageForPlace } from "../services/externalApi.service.js";
 import { generateSpontaneousItineraries } from "../services/ai.service.js";
 
-const spontaneousQuerySchema = z.object({
-    lat: z.coerce.number({ invalid_type_error: "Latitude must be a valid number" }),
-    lon: z.coerce.number({ invalid_type_error: "Longitude must be a valid number" })
-});
+
 
 export const getSpontaneousAdventures = asyncHandler(async (req, res) => {
     const parsed = spontaneousQuerySchema.safeParse(req.query);
     if (!parsed.success) {
         throw new ApiError(400, parsed.error.errors.map(err => err.message).join(', '));
     }
-    
+
     const { lat, lon } = parsed.data;
 
     // 1. Get Location Name from Coordinates
     const locationData = await getCityFromCoordinates(lat, lon);
-    
+
     // Fallback if not found, though unlikely for valid coords
     const city = locationData?.city || "Unknown Location";
     const state = locationData?.state || "";

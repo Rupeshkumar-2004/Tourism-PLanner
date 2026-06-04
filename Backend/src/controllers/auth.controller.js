@@ -4,7 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { z } from 'zod';
+import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
 
 // Helper function to generate tokens
 // Keeps controller clean and reusable
@@ -34,18 +34,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
     }
 };
 
-const registerSchema = z.object({
-    fullName: z.string().trim().min(1, 'Full name is required'),
-    email: z.string().trim().email('Invalid email format'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    role: z.enum(['user', 'admin']).optional(),
-    phone: z.string().regex(/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number').optional()
-});
 
-const loginSchema = z.object({
-    email: z.string().trim().email('Invalid email format'),
-    password: z.string().min(1, 'Password is required')
-});
 
 // ---------------- REGISTER ----------------
 

@@ -7,7 +7,7 @@ function GuideCard({ id, title, description, image, imageAlt, badge, BadgeIcon, 
   const cardTitle = title || 'Travel Guide';
   const cardDescription =
     description || 'Explore curated routes, places, and travel ideas for your next journey.';
-  const cardBadge = badge || 'Guide';
+  const cardBadge = badge || 'Destination';
 
   return (
     <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-ambient transition-all duration-300 hover:shadow-ambient-hover group cursor-pointer border border-transparent hover:border-outline-variant/30 flex flex-col h-full">
@@ -60,7 +60,7 @@ function GuideCard({ id, title, description, image, imageAlt, badge, BadgeIcon, 
               to={id ? `/destinations/${id}` : '#'}
               className="w-full bg-primary text-on-primary hover:bg-primary/90 transition-colors py-2.5 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2"
             >
-              View Guide
+              Explore Destination
             </Link>
           )}
         </div>

@@ -13,6 +13,17 @@ const TripSidebar = ({ trip }) => {
     });
     const gearList = Array.from(allGear);
 
+    const validDestinations = destinations.filter(d => d.destination);
+    const [selectedWeatherDest, setSelectedWeatherDest] = useState(
+        validDestinations.length > 0 ? validDestinations[0].destination._id : null
+    );
+
+    useEffect(() => {
+        if (validDestinations.length > 0 && !validDestinations.find(d => d.destination._id === selectedWeatherDest)) {
+            setSelectedWeatherDest(validDestinations[0].destination._id);
+        }
+    }, [destinations, selectedWeatherDest]);
+
     const [mapPlaces, setMapPlaces] = useState([]);
 
     useEffect(() => {
@@ -21,8 +32,9 @@ const TripSidebar = ({ trip }) => {
             
             const placesWithCoords = await Promise.all(
                 destinations.map(async (dest, index) => {
-                    const destData = dest.destination || {};
-                    const name = destData.name || "Unknown";
+                    const destData = dest.destination;
+                    if (!destData || !destData.name) return null;
+                    const name = destData.name;
                     
                     // If we somehow had lat/lon in DB
                     if (destData.lat && destData.lon) {
@@ -38,7 +50,8 @@ const TripSidebar = ({ trip }) => {
                     
                     try {
                         // Fallback to OpenStreetMap Nominatim for basic geocoding
-                        const query = `${name}, ${destData.city || ''}, ${destData.country || ''}`;
+                        const queryTerms = [name, destData.city, destData.country].filter(Boolean);
+                        const query = queryTerms.join(', ');
                         const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
                         const data = await res.json();
                         if (data && data.length > 0) {
@@ -98,9 +111,26 @@ const TripSidebar = ({ trip }) => {
             </div>
 
             {/* Weather Integration */}
-            {destinations.length > 0 && destinations[0]._id && (
-                <div className="w-full">
-                    <WeatherWidget destinationId={destinations[0]._id} />
+            {validDestinations.length > 0 && (
+                <div className="w-full space-y-3">
+                    <select 
+                        value={selectedWeatherDest || ''}
+                        onChange={(e) => setSelectedWeatherDest(e.target.value)}
+                        className="w-full p-3 rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/70 focus:outline-none focus:ring-2 focus:ring-primary/50 text-on-surface font-body-md appearance-none cursor-pointer"
+                        style={{
+                            backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'right 1rem center',
+                            backgroundSize: '1em'
+                        }}
+                    >
+                        {validDestinations.map(d => (
+                            <option key={d.destination._id} value={d.destination._id}>
+                                {d.destination.name}
+                            </option>
+                        ))}
+                    </select>
+                    {selectedWeatherDest && <WeatherWidget destinationId={selectedWeatherDest} />}
                 </div>
             )}
 
